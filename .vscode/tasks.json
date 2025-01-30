@@ -2,15 +2,9 @@
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "Build Docker Image",
+        "label": "Start Dev Server",
         "type": "shell",
-        "command": "docker build -t my-vite-app .",
-        "problemMatcher": []
-      },
-      {
-        "label": "Start with Docker Compose",
-        "type": "shell",
-        "command": "docker-compose up --build",
+        "command": "npm run dev",
         "problemMatcher": []
       }
     ]
