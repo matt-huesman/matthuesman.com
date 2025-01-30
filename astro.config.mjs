@@ -1,8 +1,7 @@
-// @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 
-// https://astro.build/config
 export default defineConfig({
-    output: 'static',
-    base: '/matthuesman.com/'
+  site: "https://matt-huesman.github.io/",
+  base: "/matthuesman.com/", // GitHub Pages
+  output: "static", // Ensure outputs are static files
 });

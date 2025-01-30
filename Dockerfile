@@ -1,23 +1,18 @@
-# Use a lightweight Node.js image
+# Use official Astro image (or Node.js if preferred)
 FROM node:18-alpine
 
-# Set working directory in container
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and lock file first (for efficient caching)
-COPY package*.json ./
-
-# Install dependencies
+# Copy package.json and install dependencies
+COPY package.json package-lock.json ./
 RUN npm install
 
-# Copy the rest of the files into the container
+# Copy all project files
 COPY . .
 
-# Build the Astro project (Static Site Generation)
+# Build Astro site
 RUN npm run build
 
-# Expose Astro's default static server port
-EXPOSE 4321
-
-# Serve the built files using Astro’s preview command
-CMD ["npm", "run", "preview"]
+# Serve (for local testing)
+CMD ["npx", "astro", "preview"]
