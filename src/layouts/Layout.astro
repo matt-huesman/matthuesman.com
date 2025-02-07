@@ -1,5 +1,7 @@
 ---
 import "../styles/global.css";
+import Header from '../components/Header.astro';
+import Socials from "../components/Socials.astro";
 ---
 
 <!doctype html>
@@ -10,8 +12,12 @@ import "../styles/global.css";
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Matt Huesman</title>
+
+		<script src="https://kit.fontawesome.com/da87c195d2.js" crossorigin="anonymous"></script>
 	</head>
 	<body class="bg-gray-50 text-gray-900">
+		<Header />
+		<Socials />
 		<slot />
 	</body>
 </html>

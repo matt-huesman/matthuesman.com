@@ -1,33 +1,22 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 
 export const prerender = true;
 ---
 
-<Layout>
-  <header class="flex justify-between items-center p-6 max-w-5xl mx-auto">
-    <div class="flex items-center space-x-4">
-      <img src="/matthuesman.com//profile.png" alt="Profile Picture" class="w-12 h-12 rounded-full">
-      <h1 class="text-2xl font-semibold">Matt Huesman</h1>
-    </div>
-    <nav class="space-x-4">
-      <a href="#" class="text-gray-700 hover:text-black">Projects</a>
-      <a href="#" class="text-gray-700 hover:text-black">Experience</a>
-      <a href="#" class="text-gray-700 hover:text-black">Contact</a>
-    </nav>
-  </header>
+<script>
+  import gsap from 'gsap'
+  gsap.from('#anim-welcome-msg', {x: -200, opacity: 0, ease: 'expo.out', duration: 1.5}).delay(1)
+</script>
 
+<Layout>
   <main class="max-w-5xl mx-auto p-6">
     <section class="text-center">
-      <h2 class="text-4xl font-bold">Hello! I'm Matt</h2>
+      <h2 id="anim-welcome-msg" class="text-4xl font-bold">Hey! I'm Matt</h2>
       <p class="text-lg text-gray-600 mt-2">A Computer Engineering student at the University of Minnesota</p>
-      <div class="mt-4 space-x-2">
-        <a href="#projects" class="px-4 py-2 bg-black text-white rounded">See My Work</a>
-        <a href="#contact" class="px-4 py-2 border border-gray-700 text-gray-700 rounded">Contact Me</a>
+      <div class="mt-6 space-x-6">
+        <a href="#projects" class="px-4 py-3 bg-black text-white rounded">See My Work</a>
+        <a href="#contact" class="px-4 py-3 border border-gray-700 text-gray-700 rounded">Contact Me</a>
       </div>
     </section>
 
