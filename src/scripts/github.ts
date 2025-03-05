@@ -41,7 +41,7 @@ async function fetchGitHubData() {
         
             // Create language badge
             const badge = document.createElement("span");
-            badge.className = "px-2 py-1 rounded text-xs text-white cursor-pointer transition-transform transform group-hover:scale-110";
+            badge.className = "badge";
             badge.style.backgroundColor = color;
             badge.textContent = `${language} (${percentage}%)`;
         

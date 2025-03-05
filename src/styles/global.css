@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+.badge {
+    @apply px-2 py-1 rounded text-xs text-white cursor-pointer transition-transform transform hover:scale-110;
+}
