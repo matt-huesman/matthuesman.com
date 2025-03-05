@@ -1,5 +1,6 @@
 ---
 import profile from '../assets/profile.png';
+import HeaderLink from './HeaderLink.astro';
 ---
 
 <script>
@@ -10,21 +11,13 @@ import profile from '../assets/profile.png';
 <header id="anim-header" class="flex justify-between items-center p-6 max-w-5xl mx-auto">
     <div class="flex items-center space-x-4">
       <img src={profile.src} alt="Profile Picture" class="w-12 h-12 rounded-full">
-      <h1 class="text-2xl font-semibold">Matt Huesman</h1>
+      <h1 class="text-2xl font-semibold"><a href="/">Matt Huesman</a></h1>
     </div>
     <nav class="space-x-4">
-      <a href="test" class="relative group text-gray-700 hover:text-black transition duration-300">
-        Projects
-        <span class="absolute left-0 -bottom-1.5 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-      </a>
-      <a href="#" class="relative group text-gray-700 hover:text-black">
-        Experience
-        <span class="absolute left-0 -bottom-1.5 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-      </a>
-      <a href="#" class="relative group text-gray-700 hover:text-black">
-        Contact
-        <span class="absolute left-0 -bottom-1.5 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-      </a>
+      <HeaderLink href="#">Projects</HeaderLink>
+      <HeaderLink href="#">Experience</HeaderLink>
+      <HeaderLink href="/contact">Contact</HeaderLink>
+      
       <i class="fa-solid fa-circle-half-stroke"></i>
     </nav>
 </header>

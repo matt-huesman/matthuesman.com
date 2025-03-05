@@ -6,6 +6,6 @@ export default defineConfig({
         plugins: [tailwindcss()],
     },
     site: "https://matt-huesman.github.io/",
-    base: "/matthuesman.com/", // GitHub Pages
+    base: "/", // GitHub Pages
     output: "static", // Ensure outputs are static files
 });
