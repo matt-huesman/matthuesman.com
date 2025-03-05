@@ -1,3 +1,5 @@
+import gsap from "gsap";
+
 async function fetchGitHubData() {
     const repo = "matt-huesman/matthuesman.com";
 
@@ -36,26 +38,38 @@ async function fetchGitHubData() {
         Object.entries(languages).forEach(([language, bytes]) => {
             const percentage = totalBytes ? (((bytes as number) / (totalBytes as number)) * 100).toFixed(1) : "0";
             const color = getColorForLanguage(language);
-
+        
             // Create language badge
             const badge = document.createElement("span");
-            badge.className = "px-2 py-1 rounded text-xs text-white cursor-pointer transition-transform transform hover:scale-110";
+            badge.className = "px-2 py-1 rounded text-xs text-white cursor-pointer transition-transform transform group-hover:scale-110";
             badge.style.backgroundColor = color;
             badge.textContent = `${language} (${percentage}%)`;
-
+        
             // Create progress bar section
             const progress = document.createElement("div");
-            progress.className = "h-full transition-all duration-1000";
+            progress.className = "h-full";
             progress.style.width = "0%"; // Start at 0%
             progress.style.backgroundColor = color;
-
-            // Animate bar expansion
-            setTimeout(() => {
-                progress.style.width = `${percentage}%`;
-            }, 1000);
-
+        
+            // Append elements before animation
             languageTags.appendChild(badge);
             languageProgress.appendChild(progress);
+        
+            // Animate progress bar with GSAP
+            gsap.to(progress, {
+                width: `${percentage}%`,
+                duration: 1.5,  // Animation duration
+                ease: "power2.out", // Smooth easing effect
+                delay: 0.2        // Optional delay for staggered animations
+            });
+        
+            // Hover effect: Highlight badge when progress bar is hovered
+            progress.addEventListener("mouseenter", () => {
+                gsap.to(badge, { scale: 1.1, duration: 0.2 });
+            });
+            progress.addEventListener("mouseleave", () => {
+                gsap.to(badge, { scale: 1.0, duration: 0.2 });
+            });
         });
     } catch (error) {
         console.error("Error fetching GitHub data:", error);
