@@ -11,7 +11,7 @@ export const prerender = true;
 </script>
 
 <MainLayout>
-  <main class="max-w-5xl mx-auto p-6">
+  <main class="max-w-6xl mx-auto p-6">
     <section class="text-center">
       <h2 id="anim-welcome-msg" class="text-4xl font-bold">Hey! I'm Matt</h2>
       <p class="text-lg text-gray-600 mt-2">A Computer Engineering student at the University of Minnesota</p>
@@ -21,32 +21,25 @@ export const prerender = true;
       </div>
     </section>
 
-    <section class="mt-12">  
-      <ProjectCard title="Portfolio Website" description="Built using Astro & Tailwind" repo="matt-huesman/matthuesman.com"></ProjectCard>
-    </section>
-
     <section id="projects" class="mt-12">
       <h3 class="text-2xl font-semibold">Projects</h3>
       <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="flex justify-between p-4 bg-white shadow rounded">
-          <div class="self-start">
-            <h4 class="font-semibold">Portfolio Website</h4>
-            <p class="text-sm text-gray-500">Built using Astro & Tailwind</p>
-          </div>
-          <a href="https://github.com/matt-huesman/matthuesman.com" target="_blank" class="self-end"><i class="fa-solid fa-up-right-from-square text-lg text-gray-600"></i></a>
-        </div>
-        <div class="flex justify-between p-4 bg-white shadow rounded">
-          <div class="self-start">
-            <h4 class="font-semibold">Circuit-R</h4>
-            <p class="text-sm text-gray-500">Circuit simulator</p>
-          </div>
-          <a href="https://github.com/matt-huesman/matthuesman.com" target="_blank" class="self-end"><i class="fa-solid fa-up-right-from-square text-lg text-gray-600"></i></a>
-        </div>
+        <ProjectCard title="Portfolio Website" repo="matt-huesman/matthuesman.com">
+          Built using Astro & Tailwind
+        </ProjectCard>
+        <ProjectCard title="Circuit-R" repo="matt-huesman/sandbox">
+          Circuit simulator
+        </ProjectCard>
       </div>
     </section>
 
     <section id="experience" class="mt-12">
       <h3 class="text-2xl font-semibold">Working Experience</h3>
+      <div class="flex justify-between h-24 m-4">
+        <img src="/images/umn_m_blk.png" class="p-4">
+        <img src="/images/umn_m_blk.png" class="p-4">
+        <img src="/images/medtronic_blk.png" class="">
+      </div>
       <div class="mt-4 space-y-4">
         <div class="p-4 bg-white shadow rounded">
           <h4 class="font-semibold">Engineering Intern at Medtronic</h4>
@@ -59,11 +52,6 @@ export const prerender = true;
       </div>
     </section>
   </main>
-
-  <footer class="text-center py-6 text-gray-600">
-    <p>© 2025 Matt Huesman. All rights reserved.</p>
-  </footer>
-
 </body>
 </html>
 </MainLayout>

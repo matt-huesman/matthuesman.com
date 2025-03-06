@@ -1,6 +1,7 @@
 import gsap from "gsap";
 
 export interface GitbubRepoData {
+    repo: string;
     stars: number;
     forks: number;
     languages: Record<string, number>;
@@ -8,17 +9,32 @@ export interface GitbubRepoData {
 
 export async function fetchGitHubData(repo: string): Promise<GitbubRepoData | null> {
     try {
+        if (import.meta.env.GITHUB_TOKEN) {
+            console.log("GITHUB TOKEN EXISTS")
+        } else {
+            console.log("GITHUB TOKEN DOESN'T EXIST")
+        }
+
         // Fetch repository details
-        const repoResponse = await fetch(`https://api.github.com/repos/${repo}`);
+        const repoResponse = await fetch(`https://api.github.com/repos/${repo}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': import.meta.env.GITHUB_TOKEN,
+                'User-Agent': 'matthuesman.com'
+            }
+        });
         if (!repoResponse.ok) throw new Error("Failed to fetch repository data");
         const repoData = await repoResponse.json();
 
         // Fetch language breakdown
-        const languageResponse = await fetch(`https://api.github.com/repos/${repo}/languages`);
+        const languageResponse = await fetch(`https://api.github.com/repos/${repo}/languages`, {
+            headers: {'User-Agent': 'matthuesman.com'}
+        });
         if (!languageResponse.ok) throw new Error("Failed to fetch language data");
         const languages = await languageResponse.json();
 
         return {
+            repo: repo,
             stars: repoData.stargazers_count,
             forks: repoData.forks_count,
             languages,
@@ -30,10 +46,10 @@ export async function fetchGitHubData(repo: string): Promise<GitbubRepoData | nu
 }
 
 export function updateGithubContent(data: GitbubRepoData) {
-    const stars = document.getElementById("stars");
-    const forks = document.getElementById("forks");
-    const languageTags = document.getElementById("language-tags");
-    const languageProgress = document.getElementById("language-progress");
+    const stars = document.getElementById(data.repo + "-stars");
+    const forks = document.getElementById(data.repo + "-forks");
+    const languageTags = document.getElementById(data.repo + "-language-tags");
+    const languageProgress = document.getElementById(data.repo + "-language-progress");
 
     if (!stars || !forks || !languageTags || !languageProgress) return;
 
@@ -77,12 +93,12 @@ export function updateGithubContent(data: GitbubRepoData) {
         });
 
         // Hover effect: Highlight badge when progress bar is hovered
-        progress.addEventListener("mouseenter", () => {
-            gsap.to(badge, { scale: 1.1, duration: 0.2 });
-        });
-        progress.addEventListener("mouseleave", () => {
-            gsap.to(badge, { scale: 1.0, duration: 0.2 });
-        });
+        // progress.addEventListener("mouseenter", () => {
+        //     gsap.to(badge, { scale: 1.1, duration: 0.2 });
+        // });
+        // progress.addEventListener("mouseleave", () => {
+        //     gsap.to(badge, { scale: 1.0, duration: 0.2 });
+        // });
     });
 }
 
