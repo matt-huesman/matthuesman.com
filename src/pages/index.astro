@@ -1,5 +1,6 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import MainLayout from "@layouts/MainLayout.astro";
+import ProjectCard from '@components/ui/ProjectCard.astro';
 
 export const prerender = true;
 ---
@@ -9,41 +10,19 @@ export const prerender = true;
   gsap.from('#anim-welcome-msg', {x: -200, opacity: 0, ease: 'expo.out', duration: 1.5}).delay(1)
 </script>
 
-<Layout>
+<MainLayout>
   <main class="max-w-5xl mx-auto p-6">
     <section class="text-center">
       <h2 id="anim-welcome-msg" class="text-4xl font-bold">Hey! I'm Matt</h2>
       <p class="text-lg text-gray-600 mt-2">A Computer Engineering student at the University of Minnesota</p>
       <div class="mt-6 space-x-6">
         <a href="#projects" class="px-4 py-3 bg-black text-white rounded">See My Work</a>
-        <a href="#contact" class="px-4 py-3 border border-gray-700 text-gray-700 rounded">Contact Me</a>
+        <a href="/contact" class="px-4 py-3 border border-gray-700 text-gray-700 rounded">Contact Me</a>
       </div>
     </section>
 
     <section class="mt-12">  
-      <div class="p-4 bg-white shadow rounded">
-        <a href="https://github.com/matt-huesman/matthuesman.com" target="_blank" class="flex items-center hover:underline">
-          <h4 class="font-semibold text-lg pr-2">Portfolio Website</h4>
-          <i class="fa-solid fa-up-right-from-square text-sm"></i>
-        </a>
-        <p class="text-sm text-gray-500">Built using Astro & Tailwind</p>
-      
-        <!-- Language Breakdown -->
-        <div class="mt-3 text-sm">
-          <div id="language-tags" class="flex items-center gap-2 mt-1"></div>
-        </div>
-      
-        <!-- Animated Progress Bar -->
-        <div class="mt-2 flex h-2 rounded-full bg-gray-200 overflow-hidden" id="language-progress"></div>
-      
-        <!-- GitHub Stats -->
-        <div class="mt-3 flex items-center text-sm text-gray-600">
-          <i class="fa-solid fa-star mr-1"></i>
-          <span id="stars">-</span>
-          <i class="fa-solid fa-code-fork ml-3 mr-1"></i>
-          <span id="forks">-</span>
-        </div>
-      </div>
+      <ProjectCard title="Portfolio Website" description="Built using Astro & Tailwind" repo="matt-huesman/matthuesman.com"></ProjectCard>
     </section>
 
     <section id="projects" class="mt-12">
@@ -85,7 +64,6 @@ export const prerender = true;
     <p>© 2025 Matt Huesman. All rights reserved.</p>
   </footer>
 
-  <script src="../scripts/github.ts"/>
 </body>
 </html>
-</Layout>
+</MainLayout>

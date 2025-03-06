@@ -1,6 +1,5 @@
 ---
-import profile from '../assets/profile.png';
-import HeaderLink from './HeaderLink.astro';
+import HeaderLink from '@components/ui/HeaderLink.astro';
 ---
 
 <script>
@@ -10,12 +9,12 @@ import HeaderLink from './HeaderLink.astro';
 
 <header id="anim-header" class="flex justify-between items-center p-6 max-w-5xl mx-auto">
     <div class="flex items-center space-x-4">
-      <img src={profile.src} alt="Profile Picture" class="w-12 h-12 rounded-full">
+      <img src="/images/profile.png" alt="Profile Picture" class="w-12 h-12 rounded-full">
       <h1 class="text-2xl font-semibold"><a href="/">Matt Huesman</a></h1>
     </div>
     <nav class="space-x-4">
-      <HeaderLink href="#">Projects</HeaderLink>
-      <HeaderLink href="#">Experience</HeaderLink>
+      <HeaderLink href="/#projects">Projects</HeaderLink>
+      <HeaderLink href="/#experience">Experience</HeaderLink>
       <HeaderLink href="/contact">Contact</HeaderLink>
       
       <i class="fa-solid fa-circle-half-stroke"></i>
