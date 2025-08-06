@@ -6,15 +6,17 @@ const config = {
 	preprocess: vitePreprocess(),
 	kit: { 
 		adapter: adapter({
-          pages: 'build', // Output directory for static pages
-          assets: 'build', // Output directory for static assets
-          fallback: null, // Set to null for 404 handling if needed
+			pages: 'build',
+			assets: 'build',
+			fallback: null,
         }),
 		paths: {
-          base: process.env.NODE_ENV === 'production' ? '/matthuesman.com' : '', // Adjust for your repository name
+			base: process.env.NODE_ENV === 'production' ? '/matthuesman.com' : '',
         },
 	},
 	plugins: [
 		tailwindcss(),
 	],
 };
+
+export default config;
