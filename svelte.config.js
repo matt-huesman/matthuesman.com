@@ -11,8 +11,11 @@ const config = {
 			fallback: 'index.html',
         }),
 		paths: {
-			base: process.env.NODE_ENV === 'production' ? '/matthuesman.com' : '',
-        },
+			base: dev ? '' : '/matthuesman.com',
+		},
+		prerender: {
+			entries: ['*']
+		}
 	},
 	plugins: [
 		tailwindcss(),

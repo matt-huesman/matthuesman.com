@@ -21,12 +21,12 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: NODE_ENV=production npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          personal_token: ${{ secrets.GH_TOKEN }} # ✅ Use your PAT instead
+          personal_token: ${{ secrets.GH_TOKEN }}
           publish_dir: ./build
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
