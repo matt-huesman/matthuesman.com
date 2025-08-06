@@ -1,0 +1,3 @@
+/Users/matt/Portfolio Projects/matthuesman.com/static/build/CMakeFiles/matthuesman.dir
+/Users/matt/Portfolio Projects/matthuesman.com/static/build/CMakeFiles/edit_cache.dir
+/Users/matt/Portfolio Projects/matthuesman.com/static/build/CMakeFiles/rebuild_cache.dir
