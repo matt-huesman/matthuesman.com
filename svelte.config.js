@@ -8,7 +8,7 @@ const config = {
 		adapter: adapter({
 			pages: 'build',
 			assets: 'build',
-			fallback: null,
+			fallback: 'index.html',
         }),
 		paths: {
 			base: process.env.NODE_ENV === 'production' ? '/matthuesman.com' : '',
