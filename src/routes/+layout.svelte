@@ -3,9 +3,9 @@
 	import Header from './Header.svelte';
 	import HeaderItem from './HeaderItem.svelte';
 
-	let { children } = $props();
-
 	export const prerender = true;
+
+	let { children } = $props();
 </script>
 
 <Header>
