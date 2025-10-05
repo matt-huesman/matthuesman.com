@@ -45,7 +45,7 @@
 		</p>
 		<div class="mt-6 space-x-6">
 			<a href="#projects" class="rounded bg-black px-4 py-3 text-white">See My Work</a>
-			<a href="/contact" class="rounded border border-gray-700 px-4 py-3 text-gray-700"
+			<a href="./contact" class="rounded border border-gray-700 px-4 py-3 text-gray-700"
 				>Contact Me</a
 			>
 		</div>
