@@ -6,6 +6,7 @@ const base = process.env.BASE_PATH ?? '';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
+	preprocess: vitePreprocess(),
 	kit: { 
 		adapter: adapter({
 			pages: 'build',
@@ -15,12 +16,12 @@ const config = {
 			strict: true
         }),
 		paths: {
-			base: { base }
+			base: base
 		},
-	},
-	plugins: [
-		tailwindcss(),
-	],
+		vite: {
+			plugins: [tailwindcss()]
+		}
+	}
 };
 
 export default config;
