@@ -39,5 +39,5 @@
 <div class="container">
 	<div class="emoji">🧭</div>
 	<h1>{message}</h1>
-	<p>But don't worry, you can always <a class="home-link" href="/">go home</a>!</p>
+	<p>But don't worry, you can always <a class="home-link" href="#">go home</a>!</p>
 </div>
