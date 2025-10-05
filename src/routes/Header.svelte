@@ -2,7 +2,7 @@
 	import profile from '$lib/images/profile.png';
 </script>
 
-<nav class="fixed w-[100vw] bg-[#171717] px-6">
+<nav class="sticky top-0 w-[100vw] bg-[#171717] px-6">
 	<div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between">
 		<div class="flex items-center">
 			<img src={profile} alt="Profile" class="mr-3 h-10 w-10 rounded-full" />
