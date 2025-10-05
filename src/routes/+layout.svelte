@@ -2,7 +2,7 @@
 	import '../app.css';
 	import Header from './Header.svelte';
 	import HeaderItem from './HeaderItem.svelte';
-	// import { base } from '$app/paths'
+	// import { resolve } from '$app/paths';
 
 	let { children } = $props();
 </script>
