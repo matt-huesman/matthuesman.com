@@ -14,6 +14,16 @@ const config = {
 			precompress: false,
 			strict: true
 		}),
+		prerender: {
+			handleHttpError: ({ path, referrer, message }) => {
+				// otherwise fail the build
+				if (path === '/404' || path === '/projects') {
+					// Ignore 404 page during prerender
+					return;
+				}
+				throw new Error(message);
+			}
+		},
 		paths: {
 			base: base
 		}
