@@ -8,7 +8,7 @@
 </script>
 
 <Header>
-	<HeaderItem href="#">About Me</HeaderItem>
+	<HeaderItem href="./me">About Me</HeaderItem>
 	<HeaderItem href="#">Projects</HeaderItem>
 	<HeaderItem href="#">Contact</HeaderItem>
 	<i class="fa-solid fa-circle-half-stroke"></i>
