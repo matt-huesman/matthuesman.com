@@ -8,9 +8,9 @@
 </script>
 
 <Header>
-	<HeaderItem href="/">About Me</HeaderItem>
-	<HeaderItem href="/me">Projects</HeaderItem>
-	<HeaderItem href="/contact">Contact</HeaderItem>
+	<HeaderItem href="#">About Me</HeaderItem>
+	<HeaderItem href="#">Projects</HeaderItem>
+	<HeaderItem href="#">Contact</HeaderItem>
 	<i class="fa-solid fa-circle-half-stroke"></i>
 </Header>
 
