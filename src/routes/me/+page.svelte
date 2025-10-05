@@ -3,39 +3,39 @@
 </section> -->
 
 <script>
-	var outputElement = document.getElementById('output');
-	// @ts-ignore
-	if (outputElement) outputElement.value = ''; // clear browser cache
+	// var outputElement = document.getElementById('output');
+	// // @ts-ignore
+	// if (outputElement) outputElement.value = ''; // clear browser cache
 
-	import { onMount } from 'svelte';
+	// import { onMount } from 'svelte';
 
-	onMount(() => {
-		var Module = {
-			/**
-			 * @param {any[]} args
-			 */
-			print(...args) {
-				console.log(...args);
-				if (outputElement) {
-					var text = args.join(' ');
-					// @ts-ignore
-					outputElement.value += text + '\n';
-					outputElement.scrollTop = outputElement.scrollHeight; // focus on bottom
-				}
-			}
-		};
+	// onMount(() => {
+	// 	var Module = {
+	// 		/**
+	// 		 * @param {any[]} args
+	// 		 */
+	// 		print(...args) {
+	// 			console.log(...args);
+	// 			if (outputElement) {
+	// 				var text = args.join(' ');
+	// 				// @ts-ignore
+	// 				outputElement.value += text + '\n';
+	// 				outputElement.scrollTop = outputElement.scrollHeight; // focus on bottom
+	// 			}
+	// 		}
+	// 	};
 
-		// @ts-ignore
-		if (typeof Module.onRuntimeInitialized === 'function') {
-			// @ts-ignore
-			Module.onRuntimeInitialized();
-		} else {
-			// @ts-ignore
-			Module.onRuntimeInitialized = () => {
-				console.log('Module initialized');
-			};
-		}
-	});
+	// 	// @ts-ignore
+	// 	if (typeof Module.onRuntimeInitialized === 'function') {
+	// 		// @ts-ignore
+	// 		Module.onRuntimeInitialized();
+	// 	} else {
+	// 		// @ts-ignore
+	// 		Module.onRuntimeInitialized = () => {
+	// 			console.log('Module initialized');
+	// 		};
+	// 	}
+	// });
 </script>
 
 <!-- <textarea id="output" rows="8"></textarea> -->
