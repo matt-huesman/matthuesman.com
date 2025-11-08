@@ -2,6 +2,8 @@
 	import '../routes/Terminal.svelte';
 	import Terminal from '../routes/Terminal.svelte';
 	import Banner from './Banner.svelte';
+	import Melt from './Melt.svelte';
+	import ParticleText from './ParticleText.svelte';
 
 	/**
 	 * @type {HTMLElement}
@@ -25,7 +27,9 @@
 	// }
 </script>
 
-<Banner></Banner>
+<!-- <Banner></Banner> -->
+
+<ParticleText></ParticleText>
 
 <main class="mx-auto max-w-6xl p-6">
 	<!-- svelte-ignore a11y_no_static_element_interactions -->

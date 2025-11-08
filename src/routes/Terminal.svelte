@@ -174,11 +174,11 @@
 
 <section class="container mx-auto mt-10 rounded-lg shadow-[0_0_5px_rgba(44,99,161,0.2)]">
 	<div class="overflow-hidden rounded-lg bg-gray-200">
-		<div class="flex items-center justify-between rounded-lg bg-white px-4 py-3">
+		<div class="flex items-center justify-between rounded-lg bg-[#171717] px-4 py-3">
 			<div class="flex items-center space-x-3">
 				<button
 					type="button"
-					class="h-3 w-3 cursor-pointer rounded-full bg-red-500 outline-2 outline-[#171717]"
+					class="h-3 w-3 cursor-pointer rounded-full bg-red-500 outline-2 outline-[#272727]"
 					id="closeTerminalButton"
 					aria-label="Close terminal"
 					on:click={() => {
@@ -191,7 +191,7 @@
 				></button>
 				<button
 					type="button"
-					class="h-3 w-3 cursor-pointer rounded-full bg-yellow-500 outline-2 outline-[#171717]"
+					class="h-3 w-3 cursor-pointer rounded-full bg-yellow-500 outline-2 outline-[#272727]"
 					id="closeTerminalButton"
 					aria-label="Close terminal"
 					on:click={() => {
@@ -207,7 +207,7 @@
 				></button>
 				<button
 					type="button"
-					class="h-3 w-3 cursor-pointer rounded-full bg-green-600 outline-2 outline-[#171717]"
+					class="h-3 w-3 cursor-pointer rounded-full bg-green-600 outline-2 outline-[#272727]"
 					id="closeTerminalButton"
 					aria-label="Close terminal"
 					on:click={() => {
@@ -221,7 +221,7 @@
 						}
 					}}
 				></button>
-				<p class="text-neutral pl-2 font-mono leading-none whitespace-pre select-none">Terminal</p>
+				<p class="text-neutral pl-2 font-mono text-white leading-none whitespace-pre select-none">Terminal</p>
 			</div>
 		</div>
 		<div
