@@ -48,8 +48,31 @@
 		offCtx.fillStyle = "#FFF";
 		offCtx.textAlign = "center";
         offCtx.letterSpacing = "0.1em";
-		offCtx.font = " 240px \"Sedgwick Ave Display\"";
-		offCtx.fillText(text, canvas.width / 2, canvas.height / 2);
+		// offCtx.font = " 240px \"Sedgwick Ave Display\"";
+        const padding = 100;
+        let fontSize = canvas.height / 3; // initial guess
+        offCtx.font = `${fontSize}px "Sedgwick Ave Display"`;
+
+        let metrics = offCtx.measureText(text);
+        let textWidth = metrics.width;
+        let textHeight =
+            metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+
+        // shrink until fits both width and height constraints
+        while (
+            (textWidth > canvas.width - padding * 2 ||
+                textHeight > canvas.height - padding * 2) &&
+            fontSize > 10
+        ) {
+            fontSize *= 0.9;
+            offCtx.font = `${fontSize}px "Sedgwick Ave Display"`;
+            metrics = offCtx.measureText(text);
+            textWidth = metrics.width;
+            textHeight =
+                metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+        }
+        offCtx.fillText(text, canvas.width / 2, canvas.height / 2 + textHeight / 2);
+		// offCtx.fillText(text, canvas.width / 2, canvas.height / 2);
 		const data = offCtx.getImageData(0, 0, canvas.width, canvas.height).data;
 
 		// Extract bright pixel positions
