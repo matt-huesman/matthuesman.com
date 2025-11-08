@@ -248,14 +248,14 @@
 <canvas bind:this={canvas} class="particle-canvas">
 </canvas>
 
-<a
+<button
+    type="button"
     class="down-arrow"
-    href="#next-section"
     aria-label="Scroll to next section"
-    on:click|preventDefault={() => window.scrollBy({ top: window.innerHeight, left: 0, behavior: 'smooth' })}
+    on:click={() => window.scrollBy({ top: window.innerHeight, left: 0, behavior: 'smooth' })}
 >
     <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#e3e3e3"><path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/></svg>
-</a>
+</button>
 
 <style>
 	.particle-canvas {
@@ -264,7 +264,8 @@
         top: 0;
 		width: 100%;
         height: 100vh;
-	}
+    }
+
     .down-arrow {
         position: absolute;
         display: none;
@@ -275,6 +276,10 @@
         color: #FFFFFF;
         will-change: transform, opacity;
         animation: float 6000ms ease-in-out infinite;
+        background: transparent;
+        border: none;
+        padding: 0;
+        cursor: pointer;
     }
 
     @keyframes float {
