@@ -1,23 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let closeTermBtn: HTMLElement | null;
-	let minTermBtn: HTMLElement | null;
-	let maxTermBtn: HTMLElement | null;
-	let termContainer: HTMLElement | null;
-	let termInputContainer: HTMLElement | null;
-	let termInput: HTMLInputElement | null;
-	let termOutputContainer: HTMLElement | null;
-
-	onMount(() => {
-		closeTermBtn = document.getElementById('closeTerminalButton');
-		minTermBtn = document.getElementById('minimizeTerminalButton');
-		maxTermBtn = document.getElementById('maximizeTerminalButton');
-		termContainer = document.getElementById('terminalContainer');
-		termInputContainer = document.getElementById('terminalInputContainer');
-		termInput = document.getElementById('terminalInput') as HTMLInputElement | null;
-		termOutputContainer = document.getElementById('terminalOutputContainer');
-	});
+	let termContainer: HTMLElement;
+	let termInput: HTMLInputElement;
+	let termOutputContainer: HTMLElement;
 
 	/*
 	 * TODO: welcome.mh
@@ -30,7 +16,7 @@
 	 */
 
 	const tabSize = 4;
-	let commandStack = ['', ''];
+	let commandStack = [''];
 	let commandStackIndex = 0;
 
 	function getAllOccurrences(str: string, value: string) {
@@ -54,8 +40,8 @@
 			indices.forEach((index) => {
 				line = insertString(line, ' '.repeat(tabSize - (index % tabSize)), index);
 			});
-			line = line.replaceAll('<', '&lt');
-			line = line.replaceAll('>', '&gt');
+			line = line.replaceAll('<', '&lt;');
+			line = line.replaceAll('>', '&gt;');
 			if (indent === true) {
 				writeTerm(
 					'<span class="pr-3 whitespace-pre text-green-600 select-none">&gt;</span>' + line
@@ -80,7 +66,7 @@
 
 	function exitTerminal() {
 		clearTerminal();
-		commandStack = ['', ''];
+		commandStack = [''];
 		commandStackIndex = 0;
 	}
 
@@ -102,10 +88,8 @@
 				);
 				break;
 		}
-		console.log(`Command sent: ${command}`);
 	}
 
-	// Svelte inline event handlers
 	function handleInputKeydown(event: KeyboardEvent) {
 		if (!termInput) return;
 		switch (event.key) {
@@ -123,25 +107,17 @@
 				break;
 			}
 			case 'ArrowUp': {
-				if (commandStack.length > 0) {
-					if (commandStackIndex > 0) {
-						commandStackIndex--;
-						termInput.value = String(commandStack[commandStackIndex]);
-					} else {
-						termInput.value = String('');
-					}
+				if (commandStackIndex > 0) {
+					commandStackIndex--;
+					termInput.value = commandStack[commandStackIndex];
 				}
 				event.preventDefault();
 				break;
 			}
 			case 'ArrowDown': {
-				if (commandStack.length > 0) {
-					if (commandStackIndex < commandStack.length - 1) {
-						commandStackIndex++;
-						termInput.value = String(commandStack[commandStackIndex]);
-					} else {
-						termInput.value = String('');
-					}
+				if (commandStackIndex < commandStack.length - 1) {
+					commandStackIndex++;
+					termInput.value = commandStack[commandStackIndex];
 				}
 				event.preventDefault();
 				break;
@@ -151,24 +127,14 @@
 		}
 	}
 
-	onMount(() => {
-		if (termInput) {
-			termInput.addEventListener('keydown', handleInputKeydown);
-		}
-	});
-
 	let result = $state('');
 
 	onMount(async () => {
-		// Load the Emscripten-generated glue code
+		termInput.addEventListener('keydown', handleInputKeydown);
+
 		const module = await import('../lib/main.js');
-
-		// Wait for it to finish loading and initialize
 		const instance = await module.default();
-
-		// Call a function from your C code
-		result = instance._example_function(); // Replace with actual C function
-		console.log('WASM Result:', result);
+		result = instance._example_function();
 	});
 </script>
 
@@ -181,81 +147,66 @@
 					class="h-3 w-3 cursor-pointer rounded-full bg-red-500 outline-2 outline-[#272727]"
 					id="closeTerminalButton"
 					aria-label="Close terminal"
-					on:click={() => {
-						if (termContainer) {
-							termContainer.classList.add('terminal-closed');
-							termContainer.classList.remove('terminal-minimized', 'terminal-maximized');
-						}
+					onclick={() => {
+						termContainer.classList.add('terminal-closed');
+						termContainer.classList.remove('terminal-minimized', 'terminal-maximized');
 						exitTerminal();
 					}}
 				></button>
 				<button
 					type="button"
 					class="h-3 w-3 cursor-pointer rounded-full bg-yellow-500 outline-2 outline-[#272727]"
-					id="closeTerminalButton"
-					aria-label="Close terminal"
-					on:click={() => {
-						if (termContainer) {
-							termContainer.classList.add('terminal-minimized');
-							termContainer.classList.remove('terminal-maximized', 'terminal-closed');
-							if (termOutputContainer) {
-								termOutputContainer.style.opacity = '0';
-								termOutputContainer.style.maxHeight = '0';
-							}
-						}
+					id="minimizeTerminalButton"
+					aria-label="Minimize terminal"
+					onclick={() => {
+						termContainer.classList.add('terminal-minimized');
+						termContainer.classList.remove('terminal-maximized', 'terminal-closed');
+						termOutputContainer.style.opacity = '0';
+						termOutputContainer.style.maxHeight = '0';
 					}}
 				></button>
 				<button
 					type="button"
 					class="h-3 w-3 cursor-pointer rounded-full bg-green-600 outline-2 outline-[#272727]"
-					id="closeTerminalButton"
-					aria-label="Close terminal"
-					on:click={() => {
-						if (termContainer) {
-							termContainer.classList.add('terminal-maximized');
-							termContainer.classList.remove('terminal-minimized', 'terminal-closed');
-							if (termOutputContainer) {
-								termOutputContainer.style.opacity = '1';
-								termOutputContainer.style.maxHeight = '24rem';
-							}
-						}
+					id="maximizeTerminalButton"
+					aria-label="Maximize terminal"
+					onclick={() => {
+						termContainer.classList.add('terminal-maximized');
+						termContainer.classList.remove('terminal-minimized', 'terminal-closed');
+						termOutputContainer.style.opacity = '1';
+						termOutputContainer.style.maxHeight = '24rem';
 					}}
 				></button>
 				<p class="text-neutral pl-2 font-mono text-white leading-none whitespace-pre select-none">Terminal</p>
 			</div>
 		</div>
 		<div
+			bind:this={termContainer}
 			id="terminalContainer"
 			class="terminal-transition terminal-maximized h-96 cursor-text overflow-y-scroll"
 			style="scrollbar-width: none; -ms-overflow-style: none;"
-			class:terminal-closed={termContainer?.classList.contains('terminal-closed')}
-			class:terminal-minimized={termContainer?.classList.contains('terminal-minimized')}
-			class:terminal-maximized={termContainer?.classList.contains('terminal-maximized')}
 			tabindex="0"
 			role="button"
 			aria-label="Expand terminal"
-			on:click={() => {
-				if (termContainer) {
-					termContainer.classList.add('terminal-maximized');
-					termContainer.classList.remove('terminal-minimized', 'terminal-closed');
-				}
-				if (termOutputContainer) {
-					termOutputContainer.style.opacity = '1';
-					termOutputContainer.style.maxHeight = '24rem';
-				}
+			onclick={() => {
+				termContainer.classList.add('terminal-maximized');
+				termContainer.classList.remove('terminal-minimized', 'terminal-closed');
+				termOutputContainer.style.opacity = '1';
+				termOutputContainer.style.maxHeight = '24rem';
 				termInput?.focus();
 			}}
-			on:keydown={(event) => {
+			onkeydown={(event) => {
 				if (event.key === 'Enter') {
 					event.preventDefault();
 				}
 			}}
 		>
 			<div class="px-3 py-2">
-				<div id="terminalOutputContainer" class="terminal-content-transition"></div>
+				<div bind:this={termOutputContainer} id="terminalOutputContainer" class="terminal-content-transition"></div>
 				<div id="terminalInputContainer" class="text-green flex items-center">
 					<span class="pr-3 whitespace-pre text-green-600 select-none">&gt;</span>
 					<input
+						bind:this={termInput}
 						type="text"
 						id="terminalInput"
 						class="flex-grow border-none bg-transparent font-mono whitespace-pre text-green-600 outline-none"
@@ -283,7 +234,7 @@
 	}
 
 	.terminal-minimized {
-		max-height: 40px; /* adjust as needed for your minimized height */
+		max-height: 40px;
 		opacity: 1;
 	}
 

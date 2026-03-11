@@ -1,30 +1,6 @@
 <script>
-	import '../routes/Terminal.svelte';
-	import Terminal from '../routes/Terminal.svelte';
-	import Banner from './Banner.svelte';
-	import Melt from './Melt.svelte';
+	import Terminal from './Terminal.svelte';
 	import ParticleText from './ParticleText.svelte';
-
-	/**
-	 * @type {HTMLElement}
-	 */
-	let dotSection;
-
-	/**
-	 * @param {{ clientX: number; clientY: number; }} event
-	 */
-	// function handleMouseMove(event) {
-	// 	if (!dotSection) return;
-	// 	const rect = dotSection.getBoundingClientRect();
-	// 	const x = event.clientX - rect.left;
-	// 	const y = event.clientY - rect.top;
-
-	// 	requestAnimationFrame(() => {
-	// 		dotSection.style.setProperty('--mouse-x', `${x}px`);
-	// 		dotSection.style.setProperty('--mouse-y', `${y}px`);
-	// 		dotSection.style.setProperty('--dot-size', `30px`); // Larger when hovering
-	// 	});
-	// }
 </script>
 
 <!-- <Banner></Banner> -->

@@ -15,6 +15,12 @@
     let animating = false;
     let downArrowVisible = false;
 
+	function handleResize() {
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		drawWord(words[currentIndex], true);
+	}
+
 	onMount(() => {
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
@@ -22,7 +28,9 @@
 
         drawWord(words[currentIndex], true);
 		animate();
-        
+
+		window.addEventListener('resize', handleResize);
+
         interval = setInterval(() => {
             if (currentIndex === words.length - 1) downArrowVisible = true;
 
@@ -37,7 +45,10 @@
         }, duration);
 	});
 
-	onDestroy(() => clearInterval(interval));
+	onDestroy(() => {
+		clearInterval(interval);
+		window.removeEventListener('resize', handleResize);
+	});
 
     function drawWord(text, firstTime = false) {
 		// Offscreen canvas for pixel sampling
