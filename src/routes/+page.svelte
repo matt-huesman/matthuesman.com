@@ -1,54 +1,30 @@
-<script>
-	import Terminal from './Terminal.svelte';
+<script lang="ts">
 	import ParticleText from './ParticleText.svelte';
+	import Terminal from './Terminal.svelte';
+	import About from './sections/About.svelte';
+	import Skills from './sections/Skills.svelte';
+	import Projects from './sections/Projects.svelte';
+	import Experience from './sections/Experience.svelte';
+	import Contact from './sections/Contact.svelte';
 </script>
 
-<!-- <Banner></Banner> -->
+<!-- Hero — full viewport LED dot matrix -->
+<ParticleText />
 
-<ParticleText></ParticleText>
+<!-- About — white surface -->
+<About />
 
-<main class="mx-auto max-w-6xl p-6">
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<!-- <section
-		bind:this={dotSection}
-		on:mousemove={handleMouseMove}
-		on:mouseleave={() => dotSection.style.setProperty('--dot-size', '20px')}
-		class="dot-gradient relative flex h-[400px] w-full items-center justify-center"
-	>
-		<h1 class="z-10 text-center text-4xl font-bold">Hey! I'm Matt</h1>
-	</section> -->
+<!-- Skills — off-white surface-alt -->
+<Skills />
 
-	<!-- <section class="text-center">
-		<h2 id="anim-welcome-msg" class="text-4xl font-bold">Hey! I'm Matt</h2>
-		<p class="mt-2 text-lg text-gray-600">
-			A Computer Engineering student at the University of Minnesota
-		</p>
-		<div class="mt-6 space-x-6">
-			<a href="#projects" class="rounded bg-black px-4 py-3 text-white">See My Work</a>
-			<a href="./contact" class="rounded border border-gray-700 px-4 py-3 text-gray-700"
-				>Contact Me</a
-			>
-		</div>
-	</section> -->
+<!-- Projects — white surface -->
+<Projects />
 
-	<Terminal></Terminal>
+<!-- Experience — off-white surface-alt -->
+<Experience />
 
-	<section id="projects" class="mt-12">
-		<h3 class="text-2xl font-semibold">Projects</h3>
-		<div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2"></div>
-	</section>
+<!-- Terminal — dark strip with built-in gradient fades (light→dark→light) -->
+<Terminal />
 
-	<section id="experience" class="mt-12">
-		<h3 class="text-2xl font-semibold">Working Experience</h3>
-		<div class="mt-4 space-y-4">
-			<div class="rounded bg-white p-4 shadow">
-				<h4 class="font-semibold">Engineering Intern, Medtronic</h4>
-				<p class="text-sm text-gray-500">May 2024 - Present</p>
-			</div>
-			<div class="rounded bg-white p-4 shadow">
-				<h4 class="font-semibold">Student Engineer, Office of Information & Technology UMN</h4>
-				<p class="text-sm text-gray-500">October 2023 - May 2024</p>
-			</div>
-		</div>
-	</section>
-</main>
+<!-- Contact — white surface -->
+<Contact />

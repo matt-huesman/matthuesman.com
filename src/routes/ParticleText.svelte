@@ -1,324 +1,216 @@
 <script>
-    import { onMount } from 'svelte';
-    import { onDestroy } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
-    const words = ["Hey", "I'm Matt", "Design", "Create", "Disrupt"];
-	let currentIndex = 0;
-	let canvas, ctx;
+	// ── Configuration (tweak these to adjust the look) ──────────────────
+	const WORDS          = ['Engineer.', 'Builder.', 'Matt Huesman.'];
+	const WORD_INTERVAL  = 3200;   // ms between word changes
+	const GRID_SPACING   = 13;     // px between dot centers
+	const DOT_ACTIVE_R   = 3.6;    // radius when forming text
+	const DOT_REST_R     = 1.85;   // radius when background
+	const DOT_ACTIVE_A   = 1.0;    // opacity when forming text
+	const DOT_REST_A     = 0.27;   // opacity when background (nearly invisible → "close to bg")
+	const LERP_SPEED     = 0.12;  // 0–1, how fast dots lerp per frame
+	const DOT_COLOR      = '#4ECDC4'; // --accent-teal
+	const BG_COLOR       = '#f5f5f7'; // --bg
+	const TAU            = Math.PI * 2;
+
+	let canvas;
+	let ctx;
+	let dots    = [];
+	let wordIdx = 0;
 	let interval;
-    let px_sample_rate = 4;
+	let raf;
+	let downArrowVisible = false;
 
-	let particlePool = [];
-	let activeParticles = [];
-    let startTime = 0;
-    let duration = 3000; // total scatter→reassemble cycle in ms
-    let animating = false;
-    let downArrowVisible = false;
-
-	function handleResize() {
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
-		drawWord(words[currentIndex], true);
+	// ── Grid ─────────────────────────────────────────────────────────────
+	function buildGrid() {
+		dots = [];
+		const cols = Math.ceil(canvas.width  / GRID_SPACING) + 1;
+		const rows = Math.ceil(canvas.height / GRID_SPACING) + 1;
+		for (let row = 0; row < rows; row++) {
+			for (let col = 0; col < cols; col++) {
+				dots.push({
+					x:       col * GRID_SPACING,
+					y:       row * GRID_SPACING,
+					r:       DOT_REST_R,
+					targetR: DOT_REST_R,
+					a:       DOT_REST_A,
+					targetA: DOT_REST_A
+				});
+			}
+		}
 	}
 
-	onMount(() => {
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
-		ctx = canvas.getContext("2d");
+	// ── Text sampling — determines which dots "light up" ─────────────────
+	function setTargetsFromText(text) {
+		const off    = document.createElement('canvas');
+		off.width    = canvas.width;
+		off.height   = canvas.height;
+		const offCtx = off.getContext('2d');
 
-        drawWord(words[currentIndex], true);
+		// Size text to ~28% of canvas height, clamped to canvas width
+		const padding = Math.min(canvas.width, canvas.height) * 0.10;
+		let fontSize  = canvas.height * 0.28;
+		offCtx.textAlign    = 'center';
+		offCtx.textBaseline = 'middle';
+		offCtx.font         = `700 ${fontSize}px 'Inter', -apple-system, sans-serif`;
+
+		let w = offCtx.measureText(text).width;
+		while (w > canvas.width - padding * 2 && fontSize > 10) {
+			fontSize *= 0.92;
+			offCtx.font = `700 ${fontSize}px 'Inter', -apple-system, sans-serif`;
+			w           = offCtx.measureText(text).width;
+		}
+
+		// Draw white text on transparent background for alpha-channel sampling
+		offCtx.fillStyle = '#ffffff';
+		offCtx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+		const data = offCtx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+		for (const dot of dots) {
+			const px  = Math.round(dot.x);
+			const py  = Math.round(dot.y);
+			if (px < 0 || px >= canvas.width || py < 0 || py >= canvas.height) continue;
+			// Sample the alpha channel — white text → alpha > 0; transparent bg → alpha = 0
+			const sampled = data[(py * canvas.width + px) * 4 + 3];
+			if (sampled > 80) {
+				dot.targetR = DOT_ACTIVE_R;
+				dot.targetA = DOT_ACTIVE_A;
+			} else {
+				dot.targetR = DOT_REST_R;
+				dot.targetA = DOT_REST_A;
+				
+				// Edge fade: dots near canvas edges become more transparent
+				const edgeMargin = Math.min(canvas.width, canvas.height) * 0.25;
+				const distToEdge = Math.min(
+					dot.x,
+					dot.y,
+					canvas.width - dot.x,
+					canvas.height - dot.y
+				);
+				
+				if (distToEdge < edgeMargin) {
+					const edgeFade = Math.max(0, distToEdge / edgeMargin);
+					dot.targetA *= edgeFade;
+				}
+			}
+		}
+	}
+
+	// ── Animation loop ────────────────────────────────────────────────────
+	function animate() {
+		raf = requestAnimationFrame(animate);
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		ctx.fillStyle = DOT_COLOR;
+
+		for (const dot of dots) {
+			// Lerp toward targets
+			dot.r += (dot.targetR - dot.r) * LERP_SPEED;
+			dot.a += (dot.targetA - dot.a) * LERP_SPEED;
+
+			// Skip dots that are effectively invisible (perf optimisation)
+			if (dot.a < 0.008 || dot.r < 0.08) continue;
+
+			ctx.globalAlpha = dot.a;
+			ctx.beginPath();
+			ctx.arc(dot.x, dot.y, dot.r, 0, TAU);
+			ctx.fill();
+		}
+
+		ctx.globalAlpha = 1;
+	}
+
+	// ── Resize ────────────────────────────────────────────────────────────
+	function handleResize() {
+		canvas.width  = window.innerWidth;
+		canvas.height = window.innerHeight;
+		buildGrid();
+		setTargetsFromText(WORDS[wordIdx]);
+	}
+
+	// ── Lifecycle ─────────────────────────────────────────────────────────
+	onMount(() => {
+		canvas.width  = window.innerWidth;
+		canvas.height = window.innerHeight;
+		ctx           = canvas.getContext('2d');
+
+		buildGrid();
+		setTargetsFromText(WORDS[wordIdx]);
 		animate();
 
 		window.addEventListener('resize', handleResize);
 
-        interval = setInterval(() => {
-            if (currentIndex === words.length - 1) downArrowVisible = true;
-
-            currentIndex = (currentIndex + 1) % words.length;
-            drawWord(words[currentIndex]);
-            scatterParticles();
-
-            if (downArrowVisible) {
-                const arrow = document.querySelector('.down-arrow');
-                if (arrow) arrow.style.display = 'block';
-            }
-        }, duration);
+		interval = setInterval(() => {
+			wordIdx = (wordIdx + 1) % WORDS.length;
+			setTargetsFromText(WORDS[wordIdx]);
+			if (wordIdx === WORDS.length - 1) downArrowVisible = true;
+		}, WORD_INTERVAL);
 	});
 
 	onDestroy(() => {
-		clearInterval(interval);
-		window.removeEventListener('resize', handleResize);
+		if (typeof window !== 'undefined') {
+			clearInterval(interval);
+			cancelAnimationFrame(raf);
+			window.removeEventListener('resize', handleResize);
+		}
 	});
-
-    function drawWord(text, firstTime = false) {
-		// Offscreen canvas for pixel sampling
-		const off = document.createElement("canvas");
-		const offCtx = off.getContext("2d");
-		off.width = canvas.width;
-		off.height = canvas.height;
-		offCtx.fillStyle = "#FFF";
-		offCtx.textAlign = "center";
-        offCtx.letterSpacing = "0.1em";
-		// offCtx.font = " 240px \"Sedgwick Ave Display\"";
-        const padding = 100;
-        let fontSize = canvas.height / 3; // initial guess
-        offCtx.font = `${fontSize}px "Sedgwick Ave Display"`;
-
-        let metrics = offCtx.measureText(text);
-        let textWidth = metrics.width;
-        let textHeight =
-            metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
-
-        // shrink until fits both width and height constraints
-        while (
-            (textWidth > canvas.width - padding * 2 ||
-                textHeight > canvas.height - padding * 2) &&
-            fontSize > 10
-        ) {
-            fontSize *= 0.9;
-            offCtx.font = `${fontSize}px "Sedgwick Ave Display"`;
-            metrics = offCtx.measureText(text);
-            textWidth = metrics.width;
-            textHeight =
-                metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
-        }
-        offCtx.fillText(text, canvas.width / 2, canvas.height / 2 + textHeight / 2);
-		// offCtx.fillText(text, canvas.width / 2, canvas.height / 2);
-		const data = offCtx.getImageData(0, 0, canvas.width, canvas.height).data;
-
-		// Extract bright pixel positions
-		const positions = [];
-		for (let y = 0; y < canvas.height; y += px_sample_rate) {
-			for (let x = 0; x < canvas.width; x += px_sample_rate) {
-				const alpha = data[(y * canvas.width + x) * 4 + 3];
-				if (alpha > 128) positions.push({ x, y });
-			}
-		}
-        
-		if (activeParticles.length < positions.length) {
-			let delt = positions.length - activeParticles.length;
-			for (let i = 0; i < delt; i++) {
-				let p;
-				if (particlePool.length > 0) {
-					p = particlePool.pop();
-                    p.alpha = 0;
-				} else {
-					p = {
-						x: positions[i % positions.length].x,
-						y: positions[i % positions.length].y,
-                        otx: 0,
-                        oty: 0,
-						tx: positions[i % positions.length].x,
-						ty: positions[i % positions.length].y,
-						alpha: firstTime ? 1 : 0,
-						scatterOffsetX: 0,
-						scatterOffsetY: 0
-					};
-				}
-				activeParticles.push(p);
-			}
-		} else if (activeParticles.length > positions.length) {
-			let excess = activeParticles.length - positions.length;
-			for (let i = 0; i < excess; i++) {
-				let p = activeParticles.pop();
-				particlePool.push(p);
-			}
-		}
-
-		// Assign new target positions to active particles
-		for (let i = 0; i < activeParticles.length; i++) {
-			const p = activeParticles[i];
-			const t = positions[i];
-            p.otx = p.tx;
-            p.oty = p.ty;
-			p.tx = t.x;
-			p.ty = t.y;
-		}
-	}
-
-    function scatterParticles() {
-        startTime = performance.now();
-        animating = true;
-        for (const p of [...activeParticles, ...particlePool]) {
-            const angle = Math.random() * 2 * Math.PI;
-            const radius = Math.random() * 5;
-            p.scatterOffsetX = Math.cos(angle) * radius;
-            p.scatterOffsetY = Math.sin(angle) * radius;
-        }
-    }
-
-	function lerp(a, b, t) {
-        if (t <= 0) {
-            t = 0.1;
-        }
-		return a + (b - a) * t;
-	}
-
-	function normalized_gradient(x, y, minX, maxX, minY, maxY) {
-		const width = maxX - minX;
-		const height = maxY - minY;
-		const nx = width > 0 ? (x - minX) / width : 0;
-		const ny = height > 0 ? (y - minY) / height : 0;
-		const i = (nx + ny) / 2;
-
-		const c1 = { r: 6, g: 182, b: 212 }; // #06b6d4
-		const c2 = { r: 124, g: 58, b: 237 }; // #7c3aed
-		const c3 = { r: 249, g: 115, b: 22 }; // #f97316
-		let r, g, b;
-
-		if (i < 0.5) {
-			// interpolate between c1 and c2
-			let t = i / 0.5;
-			r = Math.round(c1.r + t * (c2.r - c1.r));
-			g = Math.round(c1.g + t * (c2.g - c1.g));
-			b = Math.round(c1.b + t * (c2.b - c1.b));
-		} else {
-			// interpolate between c2 and c3
-			let t = (i - 0.5) / 0.5;
-			r = Math.round(c2.r + t * (c3.r - c2.r));
-			g = Math.round(c2.g + t * (c3.g - c2.g));
-			b = Math.round(c2.b + t * (c3.b - c2.b));
-		}
-
-		// return a valid CSS color string
-		return `rgb(${r}, ${g}, ${b})`;
-	}
-
-    function drawSineWave(ctx, now) {
-        const amplitude = 20; // oscillating amplitude
-        const frequency = 0.01;
-        const baseline = canvas.height - amplitude;
-
-        for (let i = 1; i < 5; i++) {
-            ctx.beginPath();
-            ctx.moveTo(0, baseline);
-            for (let x = 0; x < canvas.width; x++) {
-                const y = baseline + Math.sin((x - (i * 40)) * (frequency * (i / 20)) + now / 1000) * amplitude - (i * 4);
-                ctx.lineTo(x, y);
-            }
-            ctx.lineTo(canvas.width, canvas.height);
-            ctx.lineTo(0, canvas.height);
-            ctx.closePath();
-            ctx.globalAlpha = 1 / i;
-
-            ctx.fillStyle = "#FFFFFF";
-            ctx.fill();
-        }
-    }
-
-	function animate(now = performance.now()) {
-        requestAnimationFrame(animate);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawSineWave(ctx, now);
-
-        // Compute bounding box of active particles
-        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-        for (const p of [...activeParticles, ...particlePool]) {
-            if (p.x < minX) minX = p.x;
-            if (p.x > maxX) maxX = p.x;
-            if (p.y < minY) minY = p.y;
-            if (p.y > maxY) maxY = p.y;
-        }
-
-        if (animating) {
-            const elapsed = now - startTime;
-            const t = Math.min(elapsed / (duration / 2), 1);
-            const scatterFactor = Math.sin(t * Math.PI);
-
-            for (const p of activeParticles) {
-                let tx, ty;
-                if (elapsed >= (duration / 2) / 2) {
-                    tx = p.tx;
-                    ty = p.ty;
-                    p.alpha = Math.min(1, p.alpha + 0.05);
-                } else {
-                    tx = p.otx;
-                    ty = p.oty;
-                }
-
-                const lerpT = 1 - scatterFactor; 
-                p.x = lerp(p.x + p.scatterOffsetX * scatterFactor, tx, lerpT);
-                p.y = lerp(p.y + p.scatterOffsetY * scatterFactor, ty, lerpT);
-
-                ctx.globalAlpha = p.alpha;
-                ctx.fillStyle = normalized_gradient(p.x, p.y, minX, maxX, minY, maxY);
-                ctx.fillRect(p.x, p.y, 2, 2);
-            }
-
-            for (const p of particlePool) {
-                if (p.alpha > 0) {
-                    const decayProgress = Math.min(elapsed / duration, 1);
-                    const k = 8;
-                    const delay = 0.1; // fraction of duration to stay near 1
-                    let t = Math.max((decayProgress - delay) / (1 - delay), 0);
-                    p.alpha = Math.exp(-k * t);
-                    if (p.alpha < 0.1) p.alpha = 0;
-                } else {
-                    continue;
-                }
-
-                const lerpT = 1 - scatterFactor; 
-                p.x = lerp(p.x + p.scatterOffsetX * scatterFactor, p.tx, lerpT);
-                p.y = lerp(p.y + p.scatterOffsetY * scatterFactor, p.ty, lerpT);
-
-                ctx.globalAlpha = p.alpha;
-                ctx.fillStyle = normalized_gradient(p.x, p.y, minX, maxX, minY, maxY);
-                ctx.fillRect(p.x, p.y, 2, 2);
-            }
-
-            if (elapsed >= duration / 2) animating = false;
-
-        } else {
-            for (const p of activeParticles) {
-                if (p.alpha < 1) p.alpha += 0.05;
-                ctx.globalAlpha = p.alpha;
-                ctx.fillStyle = normalized_gradient(p.x, p.y, minX, maxX, minY, maxY);
-                ctx.fillRect(p.x, p.y, 2, 2);
-            }
-        }
-    }
 </script>
 
-<canvas bind:this={canvas} class="particle-canvas">
-</canvas>
+<canvas bind:this={canvas} class="dot-canvas" aria-hidden="true"></canvas>
 
 <button
-    type="button"
-    class="down-arrow"
-    aria-label="Scroll to next section"
-    on:click={() => window.scrollBy({ top: window.innerHeight, left: 0, behavior: 'smooth' })}
+	type="button"
+	class="scroll-cue"
+	class:visible={downArrowVisible}
+	aria-label="Scroll down"
+	onclick={() => window.scrollBy({ top: window.innerHeight, left: 0, behavior: 'smooth' })}
 >
-    <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#e3e3e3"><path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/></svg>
+	<svg width="20" height="28" viewBox="0 0 20 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<rect x="8.5" y="0" width="3" height="16" rx="1.5" fill="currentColor" opacity="0.3"/>
+		<path d="M1 17 L10 26 L19 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+	</svg>
 </button>
 
 <style>
-	.particle-canvas {
+	.dot-canvas {
 		display: block;
-		background: #030712;
-        top: 0;
 		width: 100%;
-        height: 100vh;
-    }
+		height: 100vh;
+		background: #f5f5f7;
+	}
 
-    .down-arrow {
-        position: absolute;
-        display: none;
-        bottom: 80px;
-        left: 50%;
-        transform: translateX(-50%) translateY(0);
-        font-size: 48px;
-        color: #FFFFFF;
-        will-change: transform, opacity;
-        animation: float 6000ms ease-in-out infinite;
-        background: transparent;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-    }
+	.scroll-cue {
+		position: absolute;
+		bottom: 48px;
+		left: 50%;
+		transform: translateX(-50%) translateY(8px);
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		color: #1d1d1f;
+		opacity: 0;
+		pointer-events: none;
+		transition:
+			opacity 0.8s ease,
+			transform 0.6s ease;
+		padding: 8px;
+	}
 
-    @keyframes float {
-        0%   { transform: translateX(-50%) translateY(0); }
-        50%  { transform: translateX(-50%) translateY(-14px); }
-        100% { transform: translateX(-50%) translateY(0); }
-    }
+	.scroll-cue.visible {
+		opacity: 0.35;
+		transform: translateX(-50%) translateY(0);
+		pointer-events: auto;
+		animation: float 3s ease-in-out infinite;
+	}
+
+	.scroll-cue:hover {
+		opacity: 0.65;
+	}
+
+	@keyframes float {
+		0%, 100% { transform: translateX(-50%) translateY(0); }
+		50%       { transform: translateX(-50%) translateY(-6px); }
+	}
 </style>
