@@ -1,8 +1,7 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-// const base = process.env.BASE_PATH ?? '';
-const dev = process.env.NODE_ENV === 'development'; // or use a custom env flag
+const dev = process.env.NODE_ENV === 'development';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -16,12 +15,8 @@ const config = {
 			strict: true
 		}),
 		prerender: {
-			handleHttpError: ({ path, referrer, message }) => {
-				// otherwise fail the build
-				if (path === '/404' || path === '/projects') {
-					// Ignore 404 page during prerender
-					return;
-				}
+			handleHttpError: ({ path, message }) => {
+				if (path === '/404') return;
 				throw new Error(message);
 			}
 		},

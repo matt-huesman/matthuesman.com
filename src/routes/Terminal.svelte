@@ -1,25 +1,34 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { dispatch } from '$lib/terminal/commands';
+	import type { TerminalState } from '$lib/terminal/commands';
 
-	let termContainer: HTMLElement;
-	let termInput: HTMLInputElement;
-	let termOutputContainer: HTMLElement;
+	// DOM bindings — must use $state() for bind:this to work in Svelte 5
+	let termContainer: HTMLElement = $state() as HTMLElement;
+	let termInput: HTMLInputElement = $state() as HTMLInputElement;
+	let termOutputContainer: HTMLElement = $state() as HTMLElement;
 
-	/*
-	 * TODO: welcome.mh
-	 * - prints welcome message char by char using webassembly
-	 * - terminal reads from stdout
-	 * - terminal writes to stdin
-	 * - terminal supports keyboard interupts for programs by passing through webassembly
-	 * - terminal supports history (up/down arrows)
-	 * - terminal supports tab completion
-	 */
+	// Terminal state
+	let termState = $state<TerminalState>({ cwd: '/home/matt' });
+	let commandStack: string[] = [''];
+	let commandStackIndex = 0;
+	let closed = $state(false);
+	let minimized = $state(false);
+
+	// Derived prompt display
+	const promptCwd = $derived(
+		termState.cwd === '/home/matt' ? '~' : termState.cwd.replace('/home/matt', '~')
+	);
+
+	const WELCOME = [
+		'Welcome to matt\'s portfolio terminal.',
+		'Type \'help\' for available commands.',
+		'─'.repeat(40)
+	];
 
 	const tabSize = 4;
-	let commandStack = [''];
-	let commandStackIndex = 0;
 
-	function getAllOccurrences(str: string, value: string) {
+	function getAllOccurrences(str: string, value: string): number[] {
 		const indexes: number[] = [];
 		let index = str.indexOf(value);
 		while (index !== -1) {
@@ -29,34 +38,30 @@
 		return indexes;
 	}
 
-	function insertString(srcString: string, insertString: string, index: number) {
-		return srcString.slice(0, index) + insertString + srcString.slice(index + 1);
+	function insertString(src: string, ins: string, index: number): string {
+		return src.slice(0, index) + ins + src.slice(index + 1);
 	}
 
-	function printTerm(val: string, indent?: boolean) {
+	function printTerm(val: string, indent = false) {
 		const lines = val.split('\n');
 		lines.forEach((line) => {
+			// Tab expansion
 			let indices = getAllOccurrences(line, '\t');
-			indices.forEach((index) => {
-				line = insertString(line, ' '.repeat(tabSize - (index % tabSize)), index);
+			indices.forEach((i) => {
+				line = insertString(line, ' '.repeat(tabSize - (i % tabSize)), i);
 			});
-			line = line.replaceAll('<', '&lt;');
-			line = line.replaceAll('>', '&gt;');
-			if (indent === true) {
-				writeTerm(
-					'<span class="pr-3 whitespace-pre text-green-600 select-none">&gt;</span>' + line
-				);
-			} else {
-				writeTerm(line);
-			}
-		});
-	}
+			// HTML escape
+			line = line.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
-	function writeTerm(line: string) {
-		const commandOutput = document.createElement('div');
-		commandOutput.classList.add('terminal-line');
-		commandOutput.innerHTML = `<pre class="text-green-600">${line === '' ? ' ' : line}</pre>`;
-		if (termOutputContainer) termOutputContainer.appendChild(commandOutput);
+			const el = document.createElement('div');
+			el.classList.add('terminal-line');
+			if (indent) {
+				el.innerHTML = `<pre class="term-text"><span class="term-prompt-indicator">❯</span> ${line}</pre>`;
+			} else {
+				el.innerHTML = `<pre class="term-text term-output">${line === '' ? ' ' : line}</pre>`;
+			}
+			termOutputContainer?.appendChild(el);
+		});
 		if (termContainer) termContainer.scrollTop = termContainer.scrollHeight;
 	}
 
@@ -64,34 +69,27 @@
 		if (termOutputContainer) termOutputContainer.innerHTML = '';
 	}
 
-	function exitTerminal() {
-		clearTerminal();
-		commandStack = [''];
-		commandStackIndex = 0;
-	}
-
 	function sendCommand(command: string) {
 		printTerm(command, true);
-		switch (command) {
-			case '':
-				break;
-			case 'clear':
-				clearTerminal();
-				break;
-			case 'project':
-				printTerm('redirecting...');
-				window.location.href = '#';
-				break;
-			default:
-				printTerm(
-					`'${command}' is not recognized as a command or program.\nType 'help' for a list.\n`
-				);
-				break;
+
+		const result = dispatch(command, termState);
+
+		if (result.type === 'clear') {
+			clearTerminal();
+		} else if (result.text) {
+			printTerm(result.text);
 		}
+
+		termState = result.newState;
+
+		// TODO: Replace dispatch() with WASM instance call once C backend is ready:
+		// const wasmResult = instance._process_command(command, termState.cwd);
+		// handleWasmResult(wasmResult);
 	}
 
 	function handleInputKeydown(event: KeyboardEvent) {
 		if (!termInput) return;
+
 		switch (event.key) {
 			case 'Enter': {
 				const command = termInput.value.trim();
@@ -101,7 +99,6 @@
 					commandStack.push('');
 				}
 				commandStackIndex = commandStack.length - 1;
-
 				sendCommand(command);
 				termInput.value = '';
 				break;
@@ -122,129 +119,170 @@
 				event.preventDefault();
 				break;
 			}
-			default:
+			case 'Tab': {
+				event.preventDefault();
+				// Tab completion: match partial input against cwd contents
+				const partial = termInput.value.split(' ').pop() ?? '';
+				if (!partial) break;
+				const { getNode, resolvePath } = (() => {
+					// dynamic import not available here; use inline logic
+					return { getNode: null, resolvePath: null };
+				})();
+				// Tab completion is a stub — full impl when WASM backend lands
 				break;
+			}
 		}
 	}
 
-	let result = $state('');
-
-	onMount(async () => {
+	onMount(() => {
 		termInput.addEventListener('keydown', handleInputKeydown);
 
-		const module = await import('../lib/main.js');
-		const instance = await module.default();
-		result = instance._example_function();
+		// Print welcome message with typewriter stagger
+		WELCOME.forEach((line, i) => {
+			setTimeout(() => printTerm(line), i * 60);
+		});
 	});
 </script>
 
-<section class="container mx-auto mt-10 rounded-lg shadow-[0_0_5px_rgba(44,99,161,0.2)]">
-	<div class="overflow-hidden rounded-lg bg-gray-200">
-		<div class="flex items-center justify-between rounded-lg bg-[#171717] px-4 py-3">
-			<div class="flex items-center space-x-3">
-				<button
-					type="button"
-					class="h-3 w-3 cursor-pointer rounded-full bg-red-500 outline-2 outline-[#272727]"
-					id="closeTerminalButton"
-					aria-label="Close terminal"
-					onclick={() => {
-						termContainer.classList.add('terminal-closed');
-						termContainer.classList.remove('terminal-minimized', 'terminal-maximized');
-						exitTerminal();
-					}}
-				></button>
-				<button
-					type="button"
-					class="h-3 w-3 cursor-pointer rounded-full bg-yellow-500 outline-2 outline-[#272727]"
-					id="minimizeTerminalButton"
-					aria-label="Minimize terminal"
-					onclick={() => {
-						termContainer.classList.add('terminal-minimized');
-						termContainer.classList.remove('terminal-maximized', 'terminal-closed');
-						termOutputContainer.style.opacity = '0';
-						termOutputContainer.style.maxHeight = '0';
-					}}
-				></button>
-				<button
-					type="button"
-					class="h-3 w-3 cursor-pointer rounded-full bg-green-600 outline-2 outline-[#272727]"
-					id="maximizeTerminalButton"
-					aria-label="Maximize terminal"
-					onclick={() => {
-						termContainer.classList.add('terminal-maximized');
-						termContainer.classList.remove('terminal-minimized', 'terminal-closed');
-						termOutputContainer.style.opacity = '1';
-						termOutputContainer.style.maxHeight = '24rem';
-					}}
-				></button>
-				<p class="text-neutral pl-2 font-mono text-white leading-none whitespace-pre select-none">Terminal</p>
-			</div>
+<!-- Gradient fade: light → dark -->
+<!-- <div class="term-fade-in" aria-hidden="true"></div> -->
+
+<!-- Full-width dark terminal strip -->
+<section id="terminal" class="term-strip" style="padding-block: var(--section-y);">
+	<div style="max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter);">
+
+		<!-- Section header (dark variant) -->
+		<div class="mb-10">
+			<p class="font-mono text-[0.65rem] tracking-[0.18em] uppercase mb-3" style="color: var(--accent-text);">
+				Interactive
+			</p>
+			<h2 class="text-[clamp(2rem,4vw,3rem)] font-bold leading-tight mb-3" style="color: #f5f5f7;">
+				Try the Terminal
+			</h2>
+			<p class="text-sm" style="color: #6e6e73; max-width: 46rem;">
+				A real shell running in your browser. Try:
+				<code class="font-mono" style="color: var(--accent-text);">ls</code>,
+				<code class="font-mono" style="color: var(--accent-text);">cat resume.txt</code>,
+				<code class="font-mono" style="color: var(--accent-text);">cd projects/</code>,
+				<code class="font-mono" style="color: var(--accent-text);">help</code>
+			</p>
 		</div>
-		<div
-			bind:this={termContainer}
-			id="terminalContainer"
-			class="terminal-transition terminal-maximized h-96 cursor-text overflow-y-scroll"
-			style="scrollbar-width: none; -ms-overflow-style: none;"
-			tabindex="0"
-			role="button"
-			aria-label="Expand terminal"
-			onclick={() => {
-				termContainer.classList.add('terminal-maximized');
-				termContainer.classList.remove('terminal-minimized', 'terminal-closed');
-				termOutputContainer.style.opacity = '1';
-				termOutputContainer.style.maxHeight = '24rem';
-				termInput?.focus();
-			}}
-			onkeydown={(event) => {
-				if (event.key === 'Enter') {
-					event.preventDefault();
-				}
-			}}
-		>
-			<div class="px-3 py-2">
-				<div bind:this={termOutputContainer} id="terminalOutputContainer" class="terminal-content-transition"></div>
-				<div id="terminalInputContainer" class="text-green flex items-center">
-					<span class="pr-3 whitespace-pre text-green-600 select-none">&gt;</span>
-					<input
-						bind:this={termInput}
-						type="text"
-						id="terminalInput"
-						class="flex-grow border-none bg-transparent font-mono whitespace-pre text-green-600 outline-none"
-						autocomplete="off"
-						autofocus
-					/>
+
+		<!-- Terminal window -->
+		{#if !closed}
+			<div class="terminal-window">
+				<!-- Title bar -->
+				<div class="term-titlebar flex items-center gap-3 rounded-t-xl px-4 py-3">
+					<!-- Traffic lights -->
+					<button
+						type="button"
+						class="h-3 w-3 rounded-full bg-red-500 transition-opacity hover:opacity-80 cursor-pointer"
+						aria-label="Close terminal"
+						onclick={() => { closed = true; clearTerminal(); }}
+					></button>
+					<button
+						type="button"
+						class="h-3 w-3 rounded-full bg-yellow-400 transition-opacity hover:opacity-80 cursor-pointer"
+						aria-label="Minimize terminal"
+						onclick={() => (minimized = !minimized)}
+					></button>
+					<button
+						type="button"
+						class="h-3 w-3 rounded-full bg-green-500 transition-opacity hover:opacity-80 cursor-pointer"
+						aria-label="Maximize terminal"
+						onclick={() => (minimized = false)}
+					></button>
+
+					<!-- Title -->
+					<span class="ml-3 font-mono text-sm text-gray-400">
+						matt@portfolio:<span style="color: var(--accent-text);">{promptCwd}</span>
+					</span>
 				</div>
+
+				<!-- Body -->
+				{#if !minimized}
+					<div
+						bind:this={termContainer}
+						class="term-body h-80 cursor-text overflow-y-auto md:h-96"
+						style="scrollbar-width: none;"
+						tabindex="0"
+						role="button"
+						aria-label="Click to focus terminal"
+						onclick={() => termInput?.focus()}
+						onkeydown={(e) => { if (e.key === 'Enter') e.preventDefault(); }}
+					>
+						<div class="p-4">
+							<div bind:this={termOutputContainer}></div>
+							<!-- Input row -->
+							<div class="flex items-center gap-2">
+								<span class="shrink-0 font-mono text-sm">
+									<span style="color: #a78bfa;">matt@portfolio</span><span style="color: #374151;">:</span><span style="color: var(--accent-text);">{promptCwd}</span><span style="color: #f5f5f7;">$</span>
+								</span>
+								<input
+									bind:this={termInput}
+									type="text"
+									class="flex-1 border-none bg-transparent font-mono text-sm text-green-300 outline-none caret-cyan-400"
+									autocomplete="off"
+									spellcheck="false"
+									autofocus
+								/>
+							</div>
+						</div>
+					</div>
+				{/if}
 			</div>
-		</div>
+		{:else}
+			<!-- Reopen button -->
+			<button
+				type="button"
+				class="flex items-center gap-2 rounded-lg px-5 py-3 font-mono text-sm transition-all"
+				style="background: var(--term-surface); border: 1px solid var(--term-border); color: #6e6e73;"
+				onmouseenter={(e) => (e.currentTarget.style.color = 'var(--accent-text)')}
+				onmouseleave={(e) => (e.currentTarget.style.color = '#6e6e73')}
+				onclick={() => { closed = false; minimized = false; }}
+			>
+				<i class="fa-solid fa-terminal"></i>
+				Reopen Terminal
+			</button>
+		{/if}
 	</div>
 </section>
 
+<!-- Gradient fade: dark → light -->
+<!-- <div class="term-fade-out" aria-hidden="true"></div> -->
+
 <style>
-	.terminal-content-transition {
-		transition:
-			max-height 0.1s ease-out,
-			opacity 0.1s ease-out;
+	.terminal-window {
+		border-radius: 0.75rem;
+		overflow: hidden;
+		border: 1px solid rgba(78, 205, 196, 0.12);
+		box-shadow: 0 0 0 1px rgba(78,205,196,0.06), 0 32px 80px rgba(0,0,0,0.5);
 	}
 
-	.terminal-transition {
-		transition:
-			max-height 0.2s ease-out,
-			opacity 0.1s ease-out;
-		max-height: 24rem;
+	.term-titlebar {
+		background: #0d1117;
+		border-bottom: 1px solid rgba(78, 205, 196, 0.08);
 	}
 
-	.terminal-minimized {
-		max-height: 40px;
-		opacity: 1;
+	.term-body {
+		background: #070d1a;
 	}
 
-	.terminal-maximized {
-		max-height: 24rem;
-		opacity: 1;
+	:global(.term-text) {
+		font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+		font-size: 0.8125rem;
+		line-height: 1.5;
+		white-space: pre-wrap;
+		word-break: break-word;
+		color: #86efac; /* green-300 */
+		margin: 0;
 	}
 
-	.terminal-closed {
-		max-height: 0;
-		opacity: 0;
+	:global(.term-output) {
+		color: #d1d5db; /* gray-300 */
+	}
+
+	:global(.term-prompt-indicator) {
+		color: #34d399; /* emerald-400 */
 	}
 </style>
