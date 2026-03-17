@@ -18,7 +18,7 @@ export const projects: Project[] = [
 			'Finite-difference heat equation solver written in C++ and compiled to WebAssembly. Runs live in the browser with interactive boundary condition controls.',
 		tags: ['C++', 'WebAssembly', 'SvelteKit'],
 		status: 'in-progress',
-		demo: '/projects/thermal-sim',
+		// demo: '/projects/thermal-sim',
 		github: 'https://github.com/matthuesman'
 	},
 	{
