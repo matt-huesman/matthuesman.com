@@ -13,9 +13,9 @@
 
 	// Map SkillColor to the CSS custom property accent colors
 	const accentStyle: Record<SkillColor, string> = {
-		cyan:    'border-left-color: var(--accent-teal); color: var(--accent-text);',
-		purple:  'border-left-color: var(--accent-teal); color: var(--accent-text);',  /* remap to teal */
-		orange:  'border-left-color: var(--accent-yellow); color: #9a7c00;',
+		teal:    'border-left-color: var(--accent-teal); color: var(--accent-teal);',
+		red:  'border-left-color: var(--accent-red); color: var(--accent-red);',
+		yellow:  'border-left-color: var(--accent-yellow); color: #9a7c00;',
 		neutral: 'border-left-color: var(--border); color: var(--text-muted);'
 	};
 </script>

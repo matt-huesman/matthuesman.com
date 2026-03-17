@@ -4,9 +4,19 @@
 
 	const entries = [
 		{
-			title: 'Engineering Intern',
+			title: 'Softwear Engineering Intern',
+			company: 'Tokyo Electron',
+			period: 'May 2026 – Present',
+			location: 'Mounds View, MN',
+			bullets: [
+				
+			],
+			icon: 'fa-solid fa-microchip'
+		},
+		{
+			title: 'R&D Engineering Intern',
 			company: 'Medtronic',
-			period: 'May 2024 – Present',
+			period: 'May 2024 – May 2026',
 			location: 'Mounds View, MN',
 			bullets: [
 				'Embedded firmware development for medical device platform in C/C++ on ARM Cortex-M',
@@ -54,7 +64,7 @@
 							style="background: var(--surface); border: 1.5px solid var(--border);"
 						>
 							<i
-								class="{entry.icon} text-[0.65rem]"
+								class="{entry.icon} text-[1rem]"
 								style="color: var(--accent-text);"
 							></i>
 						</div>

@@ -21,17 +21,17 @@
 	--accent-teal: #4ecdc4;
 	--accent-yellow: #ffe66d;
 	--accent-red: #ff6b6b;
-	--accent-green: #6bcb77;
+	--accent-green: #00ab55;
 
 	/* ── Semantic aliases (reassign here to change the overall theme) ── */
-	--accent: var(--accent-teal);        /* primary: hero, eyebrows, underlines  */
+	--accent: var(--accent-green);        /* primary: hero, eyebrows, underlines  */
 	--accent-alt: var(--accent-yellow);  /* secondary: tags, some badges          */
 	--accent-warn: var(--accent-red);    /* "In Progress" status                 */
 	--accent-ok: var(--accent-green);    /* "Complete" status                    */
 
 	/* Slightly darkened teal for text on white (contrast ratio ≥ 4.5:1) */
-	--accent-text: #2e9e98;
-	--accent-faint: rgba(78, 205, 196, 0.10);
+	--accent-text: var(--accent-green);
+	--accent-faint: rgba(0, 171, 85, 0.10);
 
 	/* ── Terminal strip (intentional dark chapter break) ── */
 	--term-bg: #0a0a0a;
@@ -39,7 +39,7 @@
 	--term-border: #1e1e1e;
 	--term-text: #e5e5e5;
 	--term-muted: #6b7280;
-	--term-accent: #4ecdc4;    /* mirrors --accent-teal */
+	--term-accent: #00ab55;    /* mirrors --accent-green */
 
 	/* ── Typography ── */
 	--font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -293,7 +293,8 @@ body::-webkit-scrollbar {
 .term-strip {
 	background: var(--term-bg);
 	color: var(--term-text);
-	box-shadow: 0 0 40px 10px var(--term-border);
+	box-shadow: 0 0 40px 20px var(--term-border);
+	z-index: -1;
 }
 
 /* Gradient fade transitions at top/bottom of terminal strip */

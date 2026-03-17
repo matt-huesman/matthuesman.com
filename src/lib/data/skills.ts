@@ -14,8 +14,9 @@ export interface SkillGroup {
 export const skillGroups: SkillGroup[] = [
 	{
 		label: 'Languages',
-		color: 'cyan',
+		color: 'teal',
 		skills: [
+			{ name: 'Java', icon: 'fa-brands fa-java' },
 			{ name: 'C', icon: 'fa-solid fa-c' },
 			{ name: 'C++' },
 			{ name: 'Python', icon: 'fa-brands fa-python' },
@@ -27,7 +28,7 @@ export const skillGroups: SkillGroup[] = [
 	},
 	{
 		label: 'Frameworks & Libraries',
-		color: 'purple',
+		color: 'red',
 		skills: [
 			{ name: 'SvelteKit' },
 			{ name: 'React', icon: 'fa-brands fa-react' },
@@ -40,7 +41,7 @@ export const skillGroups: SkillGroup[] = [
 	},
 	{
 		label: 'Hardware & Embedded',
-		color: 'orange',
+		color: 'yellow',
 		skills: [
 			{ name: 'ARM Cortex-M' },
 			{ name: 'FPGA (Xilinx)' },

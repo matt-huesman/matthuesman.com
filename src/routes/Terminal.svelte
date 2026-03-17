@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { dispatch } from '$lib/terminal/commands';
-	import type { TerminalState } from '$lib/terminal/commands';
+	import { initTerminalWasm, dispatch } from '$lib/wasm/terminal';
+	import type { TerminalState } from '$lib/wasm/terminal';
 
 	// DOM bindings — must use $state() for bind:this to work in Svelte 5
 	let termContainer: HTMLElement = $state() as HTMLElement;
@@ -81,10 +81,6 @@
 		}
 
 		termState = result.newState;
-
-		// TODO: Replace dispatch() with WASM instance call once C backend is ready:
-		// const wasmResult = instance._process_command(command, termState.cwd);
-		// handleWasmResult(wasmResult);
 	}
 
 	function handleInputKeydown(event: KeyboardEvent) {
@@ -136,6 +132,9 @@
 
 	onMount(() => {
 		termInput.addEventListener('keydown', handleInputKeydown);
+
+		// Load WASM in background; terminal uses JS fallback until ready.
+		initTerminalWasm();
 
 		// Print welcome message with typewriter stagger
 		WELCOME.forEach((line, i) => {
@@ -224,7 +223,6 @@
 									class="flex-1 border-none bg-transparent font-mono text-sm text-green-300 outline-none caret-cyan-400"
 									autocomplete="off"
 									spellcheck="false"
-									autofocus
 								/>
 							</div>
 						</div>

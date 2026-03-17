@@ -3,9 +3,12 @@
 	import { base } from '$app/paths';
 	import profile from '$lib/images/profile.png';
 	import Button from '$lib/components/Button.svelte';
+	import SectionHeader from '../SectionHeader.svelte';
 </script>
 
+
 <section id="about" style="background: var(--surface); padding-block: var(--section-y);">
+<!-- <div class="header-fade-out" aria-hidden="true"></div> -->
 	<div class="container" style="max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter);">
 		<div class="grid grid-cols-1 items-center gap-16 md:grid-cols-2">
 
@@ -23,7 +26,7 @@
 						class="absolute -bottom-4 left-1/2 -translate-x-1/2 rounded-full px-4 py-1.5 text-xs font-mono"
 						style="background: var(--surface); border: 1px solid var(--border); color: var(--accent-text); box-shadow: var(--shadow-sm); white-space: nowrap;"
 					>
-						@matthuesman
+						<a href="https://github.com/matt-huesman" target="_blank" rel="noopener noreferrer">@matthuesman</a>
 					</div>
 				</div>
 			</div>
@@ -32,17 +35,22 @@
 			<div class="flex flex-col gap-6" use:reveal={{ delay: 100 }}>
 				<!-- Eyebrow + heading -->
 				<div>
-					<p class="eyebrow mb-3">Who I am</p>
-					<h2 class="section-title">
+					<p class="eyebrow mb-3">
+						<span style="color: var(--text-faint); margin-right: 0.5em;">01</span>
+						Who I am
+					</p>
+					<h2 class="section-title mb-2">
 						Computer Engineering<br />
-						<span style="color: var(--accent-text);">@ University of Minnesota</span>
+					</h2>
+					<h2 class="section-title" style="color: #ffcc33; background: #7a0019; padding: 0.25rem 0.5rem; margin: 0.25rem; border-radius: var(--radius-sm); width: fit-content;">
+						@ UMN
 					</h2>
 				</div>
 
 				<!-- Bio copy -->
 				<div class="flex flex-col gap-4">
 					<p class="body-lead">
-						I'm a senior computer engineering student passionate about building systems that work at
+						I'm a senior computer engineering student with a minor in entrepreneurship, passionate about building systems that work at
 						the intersection of hardware and software.
 					</p>
 					<p class="body-text">
@@ -79,3 +87,14 @@
 		</div>
 	</div>
 </section>
+
+<style>
+	.header-fade-out {
+		position: absolute;
+		top: 0; left: 0; right: 0;
+		width: 100%;
+		height: 80px;
+		background: linear-gradient(to bottom, var(--bg), var(--surface));
+		pointer-events: none;
+	}
+</style>

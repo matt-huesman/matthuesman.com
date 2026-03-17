@@ -11,6 +11,8 @@
 		archived:     { label: 'Archived',    variant: 'neutral' }
 	} as const;
 
+	const demo = project.demo ? project.demo : null;
+
 	const badge = statusBadge[project.status];
 </script>
 
@@ -37,7 +39,7 @@
 		</div>
 
 		<!-- Links -->
-		<div class="flex items-center gap-4" style="border-top: 1px solid var(--border); padding-top: 1rem;">
+		<div class="flex items-center justify-between" style="border-top: 1px solid var(--border); padding-top: 1rem;">
 			{#if project.github}
 				<a
 					href={project.github}
@@ -56,7 +58,7 @@
 					target="_blank"
 					rel="noopener noreferrer"
 					class="flex items-center gap-1.5 text-xs font-mono transition-colors hover:text-[var(--text)]"
-					style="color: var(--text-muted);"
+					style="color: var(--text);"
 				>
 					<i class="fa-solid fa-arrow-up-right-from-square text-[0.6rem]"></i>
 					Live Demo

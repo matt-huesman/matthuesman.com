@@ -11,7 +11,9 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
-		"lint": "prettier --check ."
+		"lint": "prettier --check .",
+		"wasm:build": ". ./emsdk/emsdk_env.sh && emcmake cmake -B build/wasm && cmake --build build/wasm",
+		"wasm:clean": "rm -rf build/wasm static/wasm/terminal.js static/wasm/terminal.wasm"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^3.0.8",
