@@ -14,7 +14,7 @@
 
 		<!-- Header row with "View all →" link -->
 		<div class="flex items-end justify-between gap-4" use:reveal>
-			<SectionHeader number="03" label="What I've Built" title="Projects" />
+			<SectionHeader number="04" label="The Work" title="Projects" />
 			<a
 				href="{base}/projects"
 				class="mb-1 shrink-0 font-mono text-xs transition-colors"

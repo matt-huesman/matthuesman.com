@@ -16,14 +16,15 @@ export const skillGroups: SkillGroup[] = [
 		label: 'Languages',
 		color: 'teal',
 		skills: [
+			{ name: 'Python', icon: 'fa-brands fa-python' },
 			{ name: 'Java', icon: 'fa-brands fa-java' },
 			{ name: 'C', icon: 'fa-solid fa-c' },
 			{ name: 'C++' },
-			{ name: 'Python', icon: 'fa-brands fa-python' },
-			{ name: 'TypeScript', icon: 'fa-brands fa-js' },
-			{ name: 'SystemVerilog' },
+			{ name: 'Kotlin' },
+			{ name: 'JavaScript', icon: 'fa-brands fa-js' },
+			{ name: 'HTML / CSS', icon: 'fa-brands fa-html5' },
 			{ name: 'MATLAB' },
-			{ name: 'ARM Assembly' }
+			{ name: 'Verilog' }
 		]
 	},
 	{
@@ -32,37 +33,34 @@ export const skillGroups: SkillGroup[] = [
 		skills: [
 			{ name: 'SvelteKit' },
 			{ name: 'React', icon: 'fa-brands fa-react' },
-			{ name: 'Node.js', icon: 'fa-brands fa-node-js' },
-			{ name: 'CMake' },
-			{ name: 'FreeRTOS' },
 			{ name: 'NumPy / SciPy' },
-			{ name: 'Emscripten' }
-		]
-	},
-	{
-		label: 'Hardware & Embedded',
-		color: 'yellow',
-		skills: [
-			{ name: 'ARM Cortex-M' },
-			{ name: 'FPGA (Xilinx)' },
-			{ name: 'Arduino / AVR' },
-			{ name: 'Raspberry Pi', icon: 'fa-brands fa-raspberry-pi' },
-			{ name: 'KiCad PCB' },
-			{ name: 'JTAG / SWD' },
-			{ name: 'Oscilloscopes' }
+			{ name: 'OpenGL' },
+			{ name: 'Android SDK', icon: 'fa-brands fa-android' }
 		]
 	},
 	{
 		label: 'Tools & Platforms',
 		color: 'neutral',
 		skills: [
-			{ name: 'Git', icon: 'fa-brands fa-git-alt' },
+			{ name: 'Git / GitHub', icon: 'fa-brands fa-git-alt' },
+			{ name: 'GitLab', icon: 'fa-brands fa-gitlab' },
 			{ name: 'Linux', icon: 'fa-brands fa-linux' },
-			{ name: 'Docker', icon: 'fa-brands fa-docker' },
-			{ name: 'GDB' },
+			{ name: 'Kubernetes' },
 			{ name: 'Vivado' },
-			{ name: 'GitHub Actions', icon: 'fa-brands fa-github' },
-			{ name: 'VS Code' }
+			{ name: 'Android Studio' },
+			{ name: 'Figma', icon: 'fa-brands fa-figma' }
+		]
+	},
+	{
+		label: 'Domain Knowledge',
+		color: 'yellow',
+		skills: [
+			{ name: 'Computer Vision' },
+			{ name: 'AI / ML Algorithms' },
+			{ name: 'Image Processing' },
+			{ name: 'API Integration' },
+			{ name: 'Robotics' },
+			{ name: 'Agile / Scrum' }
 		]
 	}
 ];

@@ -9,7 +9,7 @@
 	<div style="max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter);">
 
 		<div use:reveal>
-			<SectionHeader number="02" label="What I Work With" title="Skills & Tools" />
+			<SectionHeader number="05" label="What I Work With" title="Skills & Tools" />
 		</div>
 
 		<div class="mt-16 flex flex-col gap-10">

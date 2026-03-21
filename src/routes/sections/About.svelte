@@ -1,9 +1,22 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import { base } from '$app/paths';
-	import profile from '$lib/images/profile.png';
 	import Button from '$lib/components/Button.svelte';
-	import SectionHeader from '../SectionHeader.svelte';
+	import RoboticArm from '$lib/components/RoboticArm.svelte';
+
+	let arm: RoboticArm;
+
+	onMount(() => {
+		let isOpen = false;
+		setInterval(() => {
+			arm?.setClawOpen(isOpen);
+			isOpen = !isOpen;
+			arm?.setJoint(0, Math.random() * (-Math.PI * 2) - Math.PI);
+			arm?.setJoint(1, Math.random() * (-Math.PI * 2) - Math.PI);
+			arm?.setJoint(2, Math.random() * (-Math.PI * 2) - Math.PI);
+		}, 1000);
+	});
 </script>
 
 
@@ -12,23 +25,12 @@
 	<div class="container" style="max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter);">
 		<div class="grid grid-cols-1 items-center gap-16 md:grid-cols-2">
 
-			<!-- Photo column -->
-			<div class="flex justify-center md:justify-start" use:reveal>
-				<div class="relative">
-					<img
-						src={profile}
-						alt="Matt Huesman"
-						class="h-72 w-72 rounded-2xl object-cover"
-						style="box-shadow: 0 0 0 2px var(--accent), 0 20px 60px rgba(0,0,0,0.10);"
-					/>
-					<!-- Floating handle badge -->
-					<div
-						class="absolute -bottom-4 left-1/2 -translate-x-1/2 rounded-full px-4 py-1.5 text-xs font-mono"
-						style="background: var(--surface); border: 1px solid var(--border); color: var(--accent-text); box-shadow: var(--shadow-sm); white-space: nowrap;"
-					>
-						<a href="https://github.com/matt-huesman" target="_blank" rel="noopener noreferrer">@matthuesman</a>
-					</div>
+			<!-- Robotic arm column — bind:this={arm} gives you the full control API -->
+			<div class="flex justify-center md:justify-start flex-col" use:reveal>
+				<div class="arm-stage">
+					<RoboticArm bind:this={arm} class="arm-canvas" />
 				</div>
+				<p class="body-text text-center">This is a completely autonomous machine learning powered robotic arm. This website is all it knows.</p>
 			</div>
 
 			<!-- Bio column -->
@@ -50,13 +52,13 @@
 				<!-- Bio copy -->
 				<div class="flex flex-col gap-4">
 					<p class="body-lead">
-						I'm a senior computer engineering student with a minor in entrepreneurship, passionate about building systems that work at
-						the intersection of hardware and software.
+						I'm a computer engineering student with a minor in entrepreneurship — driven by the belief that the best software is built by people who care deeply about the problem, the team, and whoever's on the other end of the screen.
 					</p>
 					<p class="body-text">
-						From bare-metal firmware to browser-side WASM, I enjoy the full stack —
-						especially the low-level parts most people avoid. Currently interning at Medtronic
-						on embedded firmware for medical devices.
+						My work spans AI-driven medical imaging, full-stack web development, and everything in between.
+						Currently building an end-to-end AI segmentation workflow at Medtronic and modernizing
+						AAUDE's production web presence. My sights are set on software that operates at the
+						intersection of intelligence and human experience — precise, purposeful, built to last.
 					</p>
 				</div>
 
@@ -64,9 +66,9 @@
 				<div class="flex flex-wrap gap-2">
 					{#each [
 						{ icon: 'fa-solid fa-location-dot', text: 'Minneapolis, MN' },
-						{ icon: 'fa-solid fa-microchip', text: 'Embedded Systems' },
-						{ icon: 'fa-solid fa-graduation-cap', text: 'Expected May 2026' },
-						{ icon: 'fa-solid fa-briefcase', text: 'Open to Internships' }
+						{ icon: 'fa-solid fa-brain', text: 'AI & Image Processing' },
+						{ icon: 'fa-solid fa-graduation-cap', text: 'Expected May 2027' },
+						{ icon: 'fa-solid fa-briefcase', text: 'Summer \'26 @ Tokyo Electron' }
 					] as stat}
 						<span
 							class="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs"
@@ -89,6 +91,19 @@
 </section>
 
 <style>
+	.arm-stage {
+		width: 100%;
+		max-width: 420px;
+		aspect-ratio: 3 / 4;
+		border-radius: var(--radius);
+		overflow: hidden;
+	}
+
+	.arm-canvas {
+		width: 100%;
+		height: 100%;
+	}
+
 	.header-fade-out {
 		position: absolute;
 		top: 0; left: 0; right: 0;

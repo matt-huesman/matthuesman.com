@@ -40,9 +40,7 @@
 					style="font-size: clamp(2rem,5vw,3rem); color: var(--text); line-height: 1.1;"
 				>Matt Huesman</h1>
 				<p class="body-lead mb-6">
-					Computer Engineering student at the University of Minnesota. I build things at the
-					intersection of hardware and software — embedded firmware, FPGA accelerators, browser-side
-					WASM, and occasionally a portfolio website that takes itself a little too seriously.
+					Computer Engineering student at the University of Minnesota. I build software that solves real problems — AI-powered medical imaging pipelines, modernized production web systems, and occasionally a portfolio that takes itself a little too seriously.
 				</p>
 				<div class="flex flex-wrap gap-3">
 					<Button href="mailto:me@matthuesman.com" variant="primary" size="sm">
@@ -72,8 +70,8 @@
 						</p>
 					</div>
 					<div class="text-right">
-						<p class="font-mono text-xs" style="color: var(--accent-text);">Expected May 2026</p>
-						<p class="mt-0.5 font-mono text-[0.65rem]" style="color: var(--text-faint);">GPA: 3.8 / 4.0</p>
+						<p class="font-mono text-xs" style="color: var(--accent-text);">Expected May 2027</p>
+						<p class="mt-0.5 font-mono text-[0.65rem]" style="color: var(--text-faint);">University Honors Program</p>
 					</div>
 				</div>
 				<div class="mt-5 pt-5" style="border-top: 1px solid var(--border);">
@@ -82,16 +80,13 @@
 					</p>
 					<div class="flex flex-wrap gap-1.5">
 						{#each [
-							'Embedded Systems',
-							'Digital Design (FPGA)',
+							'Artificial Intelligence',
+							'Algorithms & Data Structures',
 							'Operating Systems',
 							'Computer Architecture',
-							'Real-Time Systems',
-							'Signal Processing',
-							'Microcontrollers',
-							'Algorithms & Data Structures',
-							'Software Engineering',
-							'Compilers'
+							'Analog Electronics',
+							'Signals & Systems',
+							'Insights, Ideas & Innovation'
 						] as course}
 							<span
 								class="rounded-full px-3 py-1 font-mono text-xs"
@@ -131,20 +126,28 @@
 			<SectionHeader label="The Story" title="Background" />
 			<div class="mt-10 flex flex-col gap-5 leading-relaxed" style="color: var(--text-muted);">
 				<p>
-					I got into computer engineering because I wanted to understand how computers
-					<em style="color: var(--text);">actually</em> work —
-					not just at the software abstraction layer, but all the way down to silicon. That curiosity
-					led me to embedded systems, FPGA design, and eventually a deep appreciation for well-written C.
+					I started in competitive robotics — spending years as programming lead for a FIRST Robotics team,
+					which meant self-teaching Kotlin to build a scouting app from scratch and wiring together
+					vision-assisted autonomous control under competition pressure. That combination of urgency and
+					real-world stakes still drives everything I do.
 				</p>
 				<p>
-					These days I spend a lot of time thinking about the hardware/software interface: how to make
-					firmware that's robust under constraint, how to squeeze performance out of an FPGA by thinking
-					about the underlying architecture, and how to bridge low-level systems work with the kind of
-					interactive experiences you can only build in a browser.
+					At Medtronic I've worked at the boundary where algorithms meet patient outcomes:
+					building 3D image processing pipelines that analyze real CT scans and, more recently,
+					designing an AI workflow that automates post-implant valve analysis end-to-end.
+					It's made me care deeply about correctness and the kind of rigor the FDA expects —
+					not just the kind that passes a code review.
 				</p>
 				<p>
-					Outside of engineering, I'm usually reading about compilers, tinkering with side projects, or
-					trying to convince people that C is actually a reasonable language.
+					Beyond the day job, I lead Triangle Fraternity as president, consult on rebuilding
+					legacy web infrastructure for AAUDE, and spend free time reading about AI, building
+					side projects, and working toward the intersection of technology and entrepreneurship.
+				</p>
+				<p>
+					My goal is to be the kind of engineer who ships software that millions of people use
+					and feel — work that sits at the intersection of intelligence, precision, and human
+					experience. The companies doing that most thoughtfully are where I intend to build
+					my career.
 				</p>
 			</div>
 		</div>

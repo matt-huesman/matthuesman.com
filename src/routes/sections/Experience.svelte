@@ -4,36 +4,50 @@
 
 	const entries = [
 		{
-			title: 'Softwear Engineering Intern',
+			title: 'Software Engineering Intern',
 			company: 'Tokyo Electron',
-			period: 'May 2026 – Present',
-			location: 'Mounds View, MN',
+			period: 'Summer 2026',
+			location: 'United States',
 			bullets: [
-				
+				'Incoming software engineering internship at one of the world\'s leading semiconductor equipment manufacturers',
+				'Will work within a software team supporting semiconductor fabrication systems and tooling'
 			],
-			icon: 'fa-solid fa-microchip'
+			icon: 'fa-solid fa-microchip',
+			upcoming: true
 		},
 		{
-			title: 'R&D Engineering Intern',
+			title: 'Web Development Consultant',
+			company: 'AAUDE',
+			period: 'Mar 2026 – Present',
+			location: 'Remote',
+			bullets: [
+				'Modernizing and rebuilding production website previously built on WordPress and legacy frameworks',
+				'Designing a scalable, maintainable architecture to support the organization\'s long-term web presence'
+			],
+			icon: 'fa-solid fa-globe'
+		},
+		{
+			title: 'Engineering Intern',
 			company: 'Medtronic',
-			period: 'May 2024 – May 2026',
+			period: 'May 2024 – Present',
 			location: 'Mounds View, MN',
 			bullets: [
-				'Embedded firmware development for medical device platform in C/C++ on ARM Cortex-M',
-				'Integration testing, requirements documentation, and design reviews',
-				'Collaborated with cross-functional teams on hardware/software interface specs'
+				'Developed AI algorithm to automatically segment CT scans and extract post-implant valve metrics in a fully automated workflow',
+				'Built and improved Python/MATLAB 3D image processing pipelines to analyze 150+ subject CT scans for TMVR and MAC patients',
+				'Created MAC quantification algorithm generating key clinical decision-making metrics for thousands of subjects',
+				'Executed FDA-level script validation for TMVR automation, ensuring regulatory compliance within ±0.25mm',
+				'Implemented Git/GitLab Script Library and VCS best practices across the R&D engineering team'
 			],
 			icon: 'fa-solid fa-heart-pulse'
 		},
 		{
-			title: 'Student Engineer',
-			company: 'Office of Information & Technology — UMN',
+			title: 'Hosting Platform Student Engineer',
+			company: 'Office of Information Technology — UMN',
 			period: 'Oct 2023 – May 2024',
 			location: 'Minneapolis, MN',
 			bullets: [
-				'Built and maintained internal full-stack web tooling for IT operations',
-				'Linux systems administration and automation scripting (Python, Bash)',
-				'Provided technical support and training to students and staff'
+				'Engineered Kubernetes-based infrastructure for dozens of university servers, boosting scalability and uptime for research and instructional use',
+				'Collaborated with Agile teams to deliver campus-wide solutions, coordinating workflows via Slack and Target Process'
 			],
 			icon: 'fa-solid fa-server'
 		}
@@ -44,7 +58,7 @@
 	<div style="max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter);">
 
 		<div use:reveal>
-			<SectionHeader number="04" label="Where I've Been" title="Experience" />
+			<SectionHeader number="03" label="The Journey" title="Experience" />
 		</div>
 
 		<div class="relative mt-16">
@@ -72,15 +86,23 @@
 						<!-- Entry card -->
 						<div
 							class="card--outlined flex-1 p-6 transition-all duration-300 hover:-translate-y-0.5"
-							style="background: var(--surface);"
+							style="background: var(--surface); {entry.upcoming ? 'border-color: var(--accent); border-width: 1.5px;' : ''}"
 						>
 							<!-- Header row -->
 							<div class="mb-4 flex flex-wrap items-start justify-between gap-2">
 								<div>
-									<h3
-										class="text-base font-semibold leading-snug"
-										style="color: var(--text);"
-									>{entry.title}</h3>
+									<div class="flex items-center gap-2 flex-wrap">
+										<h3
+											class="text-base font-semibold leading-snug"
+											style="color: var(--text);"
+										>{entry.title}</h3>
+										{#if entry.upcoming}
+											<span
+												class="rounded-full px-2 py-0.5 font-mono text-[0.6rem] tracking-wide uppercase"
+												style="background: rgba(78,205,196,0.12); color: var(--accent-text); border: 1px solid rgba(78,205,196,0.3);"
+											>Next Chapter</span>
+										{/if}
+									</div>
 									<p
 										class="mt-0.5 text-sm"
 										style="color: var(--text-muted);"

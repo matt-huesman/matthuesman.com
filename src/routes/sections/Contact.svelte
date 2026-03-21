@@ -18,7 +18,7 @@
 				style="line-height: 1.1;"
 			>
 				Let's Build<br />
-				<span style="color: var(--accent-text);">Something.</span>
+				<span style="color: var(--accent-text);">What's Next.</span>
 			</h2>
 
 			<!-- Body -->
@@ -26,8 +26,9 @@
 				class="body-lead mx-auto mb-10"
 				style="max-width: 36rem;"
 			>
-				Open to internships, research collaborations, and interesting engineering problems.
-				Whether it's firmware, systems software, or something weird involving FPGAs — I'm in.
+				I'm an engineer with a clear trajectory — passionate about building software that operates
+				at the intersection of intelligence and human experience. If you're doing work that
+				matters at scale, let's talk.
 			</p>
 
 			<!-- CTAs -->

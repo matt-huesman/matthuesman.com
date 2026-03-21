@@ -24,13 +24,13 @@
 	--accent-green: #00ab55;
 
 	/* ── Semantic aliases (reassign here to change the overall theme) ── */
-	--accent: var(--accent-green);        /* primary: hero, eyebrows, underlines  */
+	--accent: var(--accent-teal);        /* primary: hero, eyebrows, underlines  */
 	--accent-alt: var(--accent-yellow);  /* secondary: tags, some badges          */
 	--accent-warn: var(--accent-red);    /* "In Progress" status                 */
 	--accent-ok: var(--accent-green);    /* "Complete" status                    */
 
 	/* Slightly darkened teal for text on white (contrast ratio ≥ 4.5:1) */
-	--accent-text: var(--accent-green);
+	--accent-text: var(--accent-teal);
 	--accent-faint: rgba(0, 171, 85, 0.10);
 
 	/* ── Terminal strip (intentional dark chapter break) ── */

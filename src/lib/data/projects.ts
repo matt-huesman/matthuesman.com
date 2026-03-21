@@ -12,21 +12,36 @@ export interface Project {
 
 export const projects: Project[] = [
 	{
-		id: 'thermal-sim',
-		title: 'Thermal Simulation Engine',
+		id: 'ct-scan-ai',
+		title: 'CT Scan AI Segmentation',
 		description:
-			'Finite-difference heat equation solver written in C++ and compiled to WebAssembly. Runs live in the browser with interactive boundary condition controls.',
-		tags: ['C++', 'WebAssembly', 'SvelteKit'],
-		status: 'in-progress',
-		// demo: '/projects/thermal-sim',
+			'AI algorithm that automatically segments CT scans to extract post-implant valve metrics in a fully automated clinical workflow. Built at Medtronic to accelerate analysis of TMVR and MAC patients.',
+		tags: ['Python', 'MATLAB', 'AI/ML', 'Image Processing'],
+		status: 'in-progress'
+	},
+	{
+		id: 'aaude-website',
+		title: 'AAUDE Website Modernization',
+		description:
+			'Consulting engagement to redesign and rebuild the AAUDE production website, migrating away from a legacy WordPress-based stack toward a scalable, maintainable modern architecture.',
+		tags: ['Web Development', 'WordPress', 'Consulting'],
+		status: 'in-progress'
+	},
+	{
+		id: 'checkers-ai',
+		title: 'Checkers AI Engine',
+		description:
+			'Minimax algorithm with alpha-beta pruning enabling efficient competitive gameplay. Benchmarked across 100+ hours of intra-model tests and documented in a research paper comparing efficiency across multiple configurations.',
+		tags: ['Python', 'AI Algorithms', 'Research'],
+		status: 'complete',
 		github: 'https://github.com/matthuesman'
 	},
 	{
-		id: 'embedded-os',
-		title: 'Embedded RTOS Kernel',
+		id: 'frc-krawler',
+		title: 'FRC Krawler 4.0',
 		description:
-			'Preemptive multitasking kernel for STM32F4 (ARM Cortex-M4) with a custom memory allocator, priority scheduler, mutex primitives, and UART debug console.',
-		tags: ['C', 'ARM Cortex-M4', 'FreeRTOS', 'CMake'],
+			'Self-taught Kotlin and Android to lead design of a scouting app from scratch for KnightKrawler Robotics. Provided the team with a modernized strategy tool used in live FIRST Robotics competitions.',
+		tags: ['Kotlin', 'Android', 'Android Studio'],
 		status: 'complete',
 		github: 'https://github.com/matthuesman'
 	},
@@ -34,36 +49,9 @@ export const projects: Project[] = [
 		id: 'portfolio',
 		title: 'Portfolio Site',
 		description:
-			'This site. Canvas-based particle animation engine, interactive filesystem terminal, and Emscripten WASM integration for a C backend.',
-		tags: ['SvelteKit', 'Svelte 5', 'TypeScript', 'WASM'],
+			'This site. Canvas-based particle animation engine, interactive terminal, and a fully autonomous ML-powered robotic arm simulation — built with SvelteKit and Svelte 5.',
+		tags: ['SvelteKit', 'Svelte 5', 'TypeScript', 'OpenGL'],
 		status: 'in-progress',
 		github: 'https://github.com/matthuesman/matthuesman.com'
-	},
-	{
-		id: 'signal-analyzer',
-		title: 'RF Signal Analyzer',
-		description:
-			'Software-defined radio signal classifier using FFT-based feature extraction and a trained SVM to identify modulation schemes from raw IQ samples.',
-		tags: ['Python', 'NumPy', 'MATLAB', 'SDR'],
-		status: 'complete',
-		github: 'https://github.com/matthuesman'
-	},
-	{
-		id: 'fpga-nn',
-		title: 'FPGA Neural Network Accelerator',
-		description:
-			'Pipelined MAC unit in SystemVerilog on a Xilinx Artix-7 FPGA. 8-bit fixed-point arithmetic, achieving 12× speedup over CPU baseline for dense layer inference.',
-		tags: ['SystemVerilog', 'Vivado', 'Python', 'FPGA'],
-		status: 'complete',
-		github: 'https://github.com/matthuesman'
-	},
-	{
-		id: 'maze-robot',
-		title: 'Autonomous Maze Solver',
-		description:
-			'Line-following robot with ultrasonic obstacle avoidance and flood-fill maze solving algorithm. Built on ATmega328P from bare metal — direct register access, no HAL.',
-		tags: ['C', 'AVR', 'ATmega328P', 'Sensors'],
-		status: 'complete',
-		github: 'https://github.com/matthuesman'
 	}
 ];

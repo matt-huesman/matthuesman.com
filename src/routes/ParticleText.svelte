@@ -2,23 +2,27 @@
 	import { onMount, onDestroy } from 'svelte';
 
 	// ── Configuration ─────────────────────────────────────────────────────
-	const WORDS          = ['Engineer.', 'Entrepreneur.', 'Creator.', 'Matt Huesman.'];
+	const WORDS          = ['Builder.', 'Engineer.', 'Explorer.', 'Matt Huesman.'];
 	const WORD_INTERVAL  = 3200;    // ms between word changes
 	const GRID_SPACING   = 10;      // px between dot centers
 	const DOT_ACTIVE_R   = 2.6;     // radius when forming text
 	const DOT_REST_R     = 1.6;    // radius when background
 	const DOT_ACTIVE_A   = 1.0;     // opacity when forming text
 	const DOT_REST_A     = 0.17;    // opacity when background
-	const DOT_COLOR      = '#00ab55';
+	const DOT_COLOR      = '#4ecdc4';
 	const TAU            = Math.PI * 2;
 
 	// ── Spring physics ────────────────────────────────────────────────────
-	const SPRING_TEXT    = 0.22;
-	const SPRING_REST    = 0.06;
-	const DAMPING        = 0.82;
-	const ATTRACT_STEP   = 30;
-	const ATTRACT_SCALE  = 0.52;
+	const SPRING_TEXT    = 0.12; // 0.18;
+	const SPRING_REST    = 0.12; // 0.04;
+	const DAMPING        = 0.92;
 	const LERP_SPEED     = 0.10;
+
+	// ── Transition explosion ──────────────────────────────────────────────
+	const EXPLODE_STRENGTH     = 0.4;   // force magnitude multiplier
+	const EXPLODE_DURATION_PCT = 0.10;  // fraction of WORD_INTERVAL explosion lasts
+	const EXPLODE_STEP         = 18;    // gradient sample distance (px) — larger = broader push
+	const EXPLODE_DURATION     = WORD_INTERVAL * EXPLODE_DURATION_PCT;
 
 	// ── Mouse repulsion ───────────────────────────────────────────────────
 	const MOUSE_RADIUS   = 90;
@@ -53,13 +57,14 @@
 
 	let canvas;
 	let ctx;
-	let dots      = [];
-	let wordIdx   = 0;
+	let dots        = [];
+	let wordIdx     = 0;
 	let interval;
 	let raf;
 	let arrowVisible = false;
 	let mouseX = -99999;
 	let mouseY = -99999;
+	let explodeStart = -Infinity;
 
 	// ── Grid ──────────────────────────────────────────────────────────────
 	function buildGrid() {
@@ -77,6 +82,7 @@
 					r:  DOT_REST_R,  targetR: DOT_REST_R,
 					a:  DOT_REST_A,  targetA: DOT_REST_A,
 					fx: 0,  fy: 0,
+					efx: 0, efy: 0,
 					isText:  false,
 					isArrow: false
 				});
@@ -138,7 +144,7 @@
 	}
 
 	// ── Text sampling ─────────────────────────────────────────────────────
-	function setTargetsFromText(text) {
+	function setTargetsFromText(text, explode = false) {
 		const off    = document.createElement('canvas');
 		off.width    = canvas.width;
 		off.height   = canvas.height;
@@ -175,8 +181,6 @@
 			if (dot.isText) {
 				dot.targetR = DOT_ACTIVE_R;
 				dot.targetA = DOT_ACTIVE_A;
-				dot.fx = 0;
-				dot.fy = 0;
 			} else {
 				dot.targetR = DOT_REST_R;
 				dot.targetA = DOT_REST_A;
@@ -186,20 +190,28 @@
 				if (distToEdge < edgeMargin) {
 					dot.targetA *= Math.max(0, distToEdge / edgeMargin);
 				}
+			}
+		}
 
-				const dx = sampleA(imgData, gx + ATTRACT_STEP, gy, cw, ch)
-				         - sampleA(imgData, gx - ATTRACT_STEP, gy, cw, ch);
-				const dy = sampleA(imgData, gx, gy + ATTRACT_STEP, cw, ch)
-				         - sampleA(imgData, gx, gy - ATTRACT_STEP, cw, ch);
-				dot.fx = dx * ATTRACT_SCALE;
-				dot.fy = dy * ATTRACT_SCALE;
+		if (explode) {
+			explodeStart = performance.now();
+			for (const dot of dots) {
+				// if (dot.isText) { dot.efx = 0; dot.efy = 0; continue; }
+				const { gx, gy } = dot;
+				// gradient of text alpha field — negated to push away from text
+				const dx = sampleA(imgData, gx + EXPLODE_STEP, gy, cw, ch)
+				         - sampleA(imgData, gx - EXPLODE_STEP, gy, cw, ch);
+				const dy = sampleA(imgData, gx, gy + EXPLODE_STEP, cw, ch)
+				         - sampleA(imgData, gx, gy - EXPLODE_STEP, cw, ch);
+				dot.efx = -dx * EXPLODE_STRENGTH;
+				dot.efy = -dy * EXPLODE_STRENGTH;
 			}
 		}
 	}
 
 	// ── Combined update ───────────────────────────────────────────────────
-	function updateTargets(text) {
-		setTargetsFromText(text);
+	function updateTargets(text, explode = false) {
+		setTargetsFromText(text, explode);
 		if (arrowVisible) updateArrowDots();
 	}
 
@@ -209,9 +221,11 @@
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		ctx.fillStyle = DOT_COLOR;
 
+		const now = performance.now();
 		const floatY = arrowVisible
-			? Math.sin((performance.now() / ARROW_FLOAT_MS) * TAU) * ARROW_FLOAT_AMP
+			? Math.sin((now / ARROW_FLOAT_MS) * TAU) * ARROW_FLOAT_AMP
 			: 0;
+		const explodeT = Math.max(0, 1 - (now - explodeStart) / EXPLODE_DURATION);
 
 		for (const dot of dots) {
 			const k = (dot.isText || dot.isArrow) ? SPRING_TEXT : SPRING_REST;
@@ -229,8 +243,8 @@
 			}
 
 			const homeY = dot.isArrow ? dot.gy + floatY : dot.gy;
-			dot.vx = dot.vx * DAMPING + k * (dot.gx  - dot.cx) + dot.fx + mfx;
-			dot.vy = dot.vy * DAMPING + k * (homeY   - dot.cy) + dot.fy + mfy;
+			dot.vx = dot.vx * DAMPING + k * (dot.gx  - dot.cx) + dot.fx + mfx + dot.efx * explodeT;
+			dot.vy = dot.vy * DAMPING + k * (homeY   - dot.cy) + dot.fy + mfy + dot.efy * explodeT;
 			dot.cx += dot.vx;
 			dot.cy += dot.vy;
 
@@ -308,7 +322,7 @@
 		interval = setInterval(() => {
 			wordIdx = (wordIdx + 1) % WORDS.length;
 			if (wordIdx === WORDS.length - 1) arrowVisible = true;
-			updateTargets(WORDS[wordIdx]);
+			updateTargets(WORDS[wordIdx], true);
 		}, WORD_INTERVAL);
 	});
 
