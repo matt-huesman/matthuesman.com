@@ -10,7 +10,7 @@
 	onMount(() => {
 		let isOpen = false;
 		setInterval(() => {
-			arm?.setClawOpen(isOpen);
+			arm?.setClawOpen(isOpen ? 0 : 1);
 			isOpen = !isOpen;
 			arm?.setJoint(0, Math.random() * (-Math.PI * 2) - Math.PI);
 			arm?.setJoint(1, Math.random() * (-Math.PI * 2) - Math.PI);
