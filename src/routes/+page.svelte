@@ -10,12 +10,7 @@
 </script>
 
 <!-- Hero — full viewport particle canvas with trajectory overlay -->
-<div class="hero-wrapper">
-	<ParticleText />
-	<div class="hero-tagline" aria-hidden="true">
-		<p>UMN &nbsp;·&nbsp; Medtronic &nbsp;·&nbsp; Tokyo Electron &nbsp;→</p>
-	</div>
-</div>
+<ParticleText />
 
 <!-- About — who I am -->
 <About />

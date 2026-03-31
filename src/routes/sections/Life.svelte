@@ -1,32 +1,8 @@
 <script lang="ts">
 	import { reveal } from '$lib/actions/reveal';
+	import { content, tabs } from '$lib/data/life';
 
 	let activeTab = $state<'reading' | 'listening' | 'watching'>('reading');
-
-	// ── Update these with your actual current favorites ──────────────────
-	const content = {
-		reading: [
-			{ title: 'Into Thin Air',                  sub: 'Jon Krakauer' },
-			{ title: 'The Almanack of Naval Ravikant', sub: 'Eric Jorgenson' },
-			{ title: 'Atomic Habits',                  sub: 'James Clear' }
-		],
-		listening: [
-			{ title: 'Fleet Foxes',     sub: 'Helplessness Blues' },
-			{ title: 'The Lumineers',   sub: 'Brightside' },
-			{ title: 'Hozier',          sub: 'Unreal Unearth' }
-		],
-		watching: [
-			{ title: 'Free Solo',        sub: '2018 · Documentary' },
-			{ title: 'Planet Earth III', sub: 'BBC · Nature' },
-			{ title: 'The Bear',         sub: 'FX · Drama' }
-		]
-	};
-
-	const tabs: { key: 'reading' | 'listening' | 'watching'; label: string; icon: string }[] = [
-		{ key: 'reading',   label: 'Reading',   icon: 'fa-solid fa-book-open' },
-		{ key: 'listening', label: 'Listening', icon: 'fa-solid fa-music' },
-		{ key: 'watching',  label: 'Watching',  icon: 'fa-solid fa-film' }
-	];
 </script>
 
 <section id="life" style="background: var(--surface-alt); padding-block: var(--section-y);">

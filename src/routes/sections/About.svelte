@@ -30,7 +30,7 @@
 				<div class="arm-stage">
 					<RoboticArm bind:this={arm} class="arm-canvas" />
 				</div>
-				<p class="body-text text-center">This is a completely autonomous machine learning powered robotic arm. This website is all it knows.</p>
+				<p class="body-text text-center">This will be a completely autonomous machine learning powered robotic arm. This website is all it knows.</p>
 			</div>
 
 			<!-- Bio column -->
