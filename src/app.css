@@ -285,26 +285,3 @@ body::-webkit-scrollbar {
 	opacity: 1;
 	transform: translateY(0);
 }
-
-/* ═══════════════════════════════════════════════════════════
-   TERMINAL STRIP STYLES
-   (used by Terminal.svelte section wrapper)
-   ═══════════════════════════════════════════════════════════ */
-.term-strip {
-	background: var(--term-bg);
-	color: var(--term-text);
-	box-shadow: 0 0 40px 20px var(--term-border);
-	z-index: -1;
-}
-
-/* Gradient fade transitions at top/bottom of terminal strip */
-.term-fade-in {
-	height: 80px;
-	/* background: linear-gradient(to bottom, var(--surface-alt), var(--term-bg)); */
-	/* box-shadow: inset 0px -40px 40px -40px var(--term-bg); */
-}
-
-.term-fade-out {
-	height: 80px;
-	/* background: linear-gradient(to bottom, var(--term-bg), var(--surface)); */
-}

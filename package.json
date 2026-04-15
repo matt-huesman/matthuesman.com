@@ -13,7 +13,8 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check .",
 		"wasm:build": ". ./emsdk/emsdk_env.sh && emcmake cmake -B build/wasm && cmake --build build/wasm",
-		"wasm:clean": "rm -rf build/wasm static/wasm/terminal.js static/wasm/terminal.wasm"
+		"wasm:clean": "rm -rf build/wasm static/wasm/terminal.js static/wasm/terminal.wasm",
+		"pyodide:setup": "node scripts/setup_pyodide.js"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^3.0.8",

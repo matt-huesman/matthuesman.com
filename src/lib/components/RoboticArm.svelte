@@ -1,130 +1,129 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import * as THREE from 'three';
-	import { ARM, defaultState } from '$lib/robotic_arm/arm';
+	import { initArmPython, stepArm, setIKTarget, isArmReady, onArmReady } from '$lib/wasm/arm_python';
 
-	// ─── Visual-only configuration ────────────────────────────────────────────
-	// Kinematics/structure live in arm.ts. Only rendering concerns belong here.
+	// ─── Constants ────────────────────────────────────────────────────────────
 
-	export const COLORS = {
-		body:    0x3d6491,
-		joint:   0x1e3352,
-		claw:    0x4d7aab,
-		outline: 0x08111e,
-		nameFg:  '#c8ddf5',
-		nameBg:  '#3d6491',
-	};
+	/**
+	 * Scale factor: Python arm is in metres (Z-up), Three.js scene is in
+	 * world units (Y-up).  5× makes the arm roughly fill the existing viewport.
+	 */
+	const PY_SCALE = 5.0;
 
-	const NAME          = 'MATT HUESMAN';
-	const OUTLINE_SCALE = 1.07;
+	/** Maximum reach of the Python arm in metres (0.30 + 0.25 + 0.10 + wrist). */
+	const MAX_REACH = 0.58;
+	const MIN_REACH = 0.15;
 
-	// Convenience aliases into the canonical arm definition
-	const { base, segments: [seg0, seg1, seg2], claw } = ARM;
+	const JOINT_RADIUS = 0.10;
+	const LINK_RADIUS  = 0.07;
 
-	// Default resting pose derived from joint home angles
-	const DEFAULT_STATE = defaultState(ARM);
+	// Joint/link colours — default blue used while Pyodide is loading
+	const DEFAULT_COLOR   = 0x3d6491;
+	const JOINT_BASE_COLOR = 0x1e3352;
+	const OUTLINE_COLOR   = 0x08111e;
+	const OUTLINE_SCALE   = 1.08;
 
 	// ─── Props ────────────────────────────────────────────────────────────────
 	interface Props { class?: string }
 	let { class: cls = '' }: Props = $props();
 
+	// ─── State ────────────────────────────────────────────────────────────────
+	let pyReady = $state(false);
+
 	// ─── Internal refs ────────────────────────────────────────────────────────
-	let canvasEl: HTMLCanvasElement;
-	let renderer: THREE.WebGLRenderer;
-	let scene:    THREE.Scene;
-	let camera:   THREE.PerspectiveCamera;
-	let animId:   number;
-	let ro:       ResizeObserver;
-	let gmap:     THREE.DataTexture;
+	let canvasEl:  HTMLCanvasElement;
+	let renderer:  THREE.WebGLRenderer;
+	let scene:     THREE.Scene;
+	let camera:    THREE.PerspectiveCamera;
+	let animId:    number;
+	let ro:        ResizeObserver;
+	let gmap:      THREE.DataTexture;
 
-	// The three rotating pivot groups — one per joint
-	let j0: THREE.Group; // base yaw   (rotates Y)
-	let j1: THREE.Group; // shoulder   (rotates Z)
-	let j2: THREE.Group; // elbow      (rotates Z)
+	// Position-driven arm geometry: 7 links + 7 joints + base sphere
+	// Allocated once in buildArm(), updated every frame from Python FK data.
+	let linkMeshes:  THREE.Mesh[] = [];
+	let jointMeshes: THREE.Mesh[] = [];
+	let baseMesh:    THREE.Mesh;
 
-	// Claw finger groups — rotated to open/close
-	let clawL: THREE.Group;
-	let clawR: THREE.Group;
+	// Per-joint toon materials (one per joint so we can tint them individually)
+	let linkMats:  THREE.MeshToonMaterial[] = [];
+	let jointMats: THREE.MeshToonMaterial[] = [];
 
-	// Invisible marker at the very tip of the claw — used for IK queries
-	let clawTip: THREE.Group;
+	// Mouse-tracking state for IK target
+	let lastTarget: THREE.Vector3 = new THREE.Vector3(0.3, 0.5, 0);
+	const _raycaster = new THREE.Raycaster();
+	const _ikPlane   = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
 
-	// ─── Public API ───────────────────────────────────────────────────────────
+	// ─── Coordinate transform ─────────────────────────────────────────────────
 
 	/**
-	 * Set a single joint angle in radians.
-	 *   index 0 — base yaw    (rotates around Y)
-	 *   index 1 — shoulder    (rotates around Z)
-	 *   index 2 — elbow       (rotates around Z)
+	 * Convert Python world-space position (metres, Z-up) to Three.js (Y-up, scaled).
+	 *   py  [x, y, z]  →  threejs  [x*s, z*s, y*s]
 	 */
-	export function setJoint(index: 0 | 1 | 2, radians: number): void {
-		if (!j0) return;
-		if (index === 0) j0.rotation.y = radians;
-		if (index === 1) j1.rotation.z = radians;
-		if (index === 2) j2.rotation.z = radians;
-	}
-
-	/** Set all three joint angles at once — [yaw, shoulder, elbow] */
-	export function setJoints(angles: readonly [number, number, number]): void {
-		setJoint(0, angles[0]);
-		setJoint(1, angles[1]);
-		setJoint(2, angles[2]);
-	}
-
-	/** Read the current joint angles — [yaw, shoulder, elbow] */
-	export function getJoints(): [number, number, number] {
-		if (!j0) return DEFAULT_STATE.angles as [number, number, number];
-		return [j0.rotation.y, j1.rotation.z, j2.rotation.z];
-	}
-
-	/** World-space position of the claw tip (end effector). Useful for IK. */
-	export function getEndEffectorPosition(): THREE.Vector3 {
-		const v = new THREE.Vector3();
-		clawTip?.getWorldPosition(v);
-		return v;
+	function pyToThree(pos: [number, number, number]): THREE.Vector3 {
+		return new THREE.Vector3(pos[0] * PY_SCALE, pos[2] * PY_SCALE, pos[1] * PY_SCALE);
 	}
 
 	/**
-	 * Open or close the claw.
-	 *   t = 0  →  closed
-	 *   t = 1  →  fully open
+	 * Convert a Three.js canvas pointer position to a Python IK target.
+	 * The arm lives in the XZ plane (Python Y=0), so we shoot a ray from
+	 * the camera and intersect the Y=0 plane in Three.js (= Python Z=0
+	 * after axis swap), then convert back to Python space.
 	 */
-	export function setClawOpen(t: number): void {
-		if (!clawL) return;
-		const a = Math.max(0, Math.min(1, t)) * claw.maxOpenAngle;
-		clawL.rotation.z =  a;
-		clawR.rotation.z = -a;
+	function screenToIKTarget(clientX: number, clientY: number): void {
+		if (!camera || !canvasEl) return;
+
+		const rect = canvasEl.getBoundingClientRect();
+		const ndcX =  ((clientX - rect.left)  / rect.width)  * 2 - 1;
+		const ndcY = -((clientY - rect.top)   / rect.height) * 2 + 1;
+
+		_raycaster.setFromCamera(new THREE.Vector2(ndcX, ndcY), camera);
+
+		// Python Y=0 → Three.js Z=0 (our coord swap); intersect that plane
+		const target = new THREE.Vector3();
+		const hit    = _raycaster.ray.intersectPlane(_ikPlane, target);
+		if (!hit) return; // ray parallel to plane — ignore
+
+		// Convert back to Python space: [x/s, z/s, y/s] (inverse of pyToThree)
+		const pyX =  target.x / PY_SCALE;
+		const pyY =  target.z / PY_SCALE;  // Three.js Z → Python Y
+		const pyZ =  target.y / PY_SCALE;  // Three.js Y → Python Z
+
+		// Clamp to reachable shell (XZ plane in Python = XY plane here)
+		const dist = Math.sqrt(pyX * pyX + pyZ * pyZ);
+		let cx = pyX, cz = pyZ;
+		if (dist > MAX_REACH)      { cx = pyX / dist * MAX_REACH; cz = pyZ / dist * MAX_REACH; }
+		else if (dist < MIN_REACH && dist > 0) { cx = pyX / dist * MIN_REACH; cz = pyZ / dist * MIN_REACH; }
+
+		lastTarget.set(cx * PY_SCALE, cz * PY_SCALE, pyY * PY_SCALE);
+		setIKTarget(cx, pyY, cz);
 	}
 
-	// ─── Geometry / material factories ───────────────────────────────────────
+	// ─── Material / geometry helpers ──────────────────────────────────────────
 
 	function makeGradientMap(): THREE.DataTexture {
-		// 3-stop toon gradient: shadow → midtone → highlight
 		const data = new Uint8Array([0, 128, 255]);
 		const tex  = new THREE.DataTexture(data, 3, 1, THREE.RedFormat);
 		tex.needsUpdate = true;
 		return tex;
 	}
 
-	function toon(color: number, map?: THREE.Texture): THREE.MeshToonMaterial {
-		return new THREE.MeshToonMaterial({ color, gradientMap: gmap, map });
+	function toon(hex: number): THREE.MeshToonMaterial {
+		return new THREE.MeshToonMaterial({ color: hex, gradientMap: gmap });
 	}
 
 	function outlineMat(): THREE.MeshBasicMaterial {
-		return new THREE.MeshBasicMaterial({ color: COLORS.outline, side: THREE.BackSide });
+		return new THREE.MeshBasicMaterial({ color: OUTLINE_COLOR, side: THREE.BackSide });
 	}
 
-	/**
-	 * Create a mesh with a BackSide outline child, then add it to `parent`.
-	 * The outline is a child of the mesh so it inherits the same transform.
-	 */
-	function part(
-		geo:    THREE.BufferGeometry,
-		color:  number,
+	/** Create a mesh + BackSide outline child, add to parent, return mesh. */
+	function meshWithOutline(
+		geo: THREE.BufferGeometry,
+		mat: THREE.MeshToonMaterial,
 		parent: THREE.Object3D,
-		map?:   THREE.Texture,
 	): THREE.Mesh {
-		const mesh    = new THREE.Mesh(geo, toon(color, map));
+		const mesh    = new THREE.Mesh(geo, mat);
 		const outline = new THREE.Mesh(geo, outlineMat());
 		outline.scale.setScalar(OUTLINE_SCALE);
 		mesh.add(outline);
@@ -132,107 +131,81 @@
 		return mesh;
 	}
 
-	function cyl(rTop: number, rBot: number, h: number): THREE.CylinderGeometry {
-		return new THREE.CylinderGeometry(rTop, rBot, h, 28, 1);
-	}
-
-	function sph(r: number): THREE.SphereGeometry {
-		return new THREE.SphereGeometry(r, 24, 18);
-	}
-
-	function makeNameTexture(): THREE.CanvasTexture {
-		const W = 512, H = 512;
-		const cv  = document.createElement('canvas');
-		cv.width  = W;
-		cv.height = H;
-		const ctx = cv.getContext('2d')!;
-
-		// Background — matches arm body color
-		ctx.fillStyle = COLORS.nameBg;
-		ctx.fillRect(0, 0, W, H);
-
-		// Name text — drawn horizontally, will be rotated on the mesh
-		ctx.fillStyle    = COLORS.nameFg;
-		ctx.font         = 'bold 56px "Courier New", monospace';
-		ctx.textAlign    = 'center';
-		ctx.textBaseline = 'middle';
-		ctx.fillText(NAME, W / 2, H / 2);
-
-		const tex = new THREE.CanvasTexture(cv);
-		tex.rotation = Math.PI / 2; // Rotate texture 90° to display vertically
-		tex.center.set(0.5, 0.5);
-		return tex;
-	}
-
 	// ─── Arm scene graph ──────────────────────────────────────────────────────
 
+	/**
+	 * Allocate all joint spheres and link cylinders once.
+	 * Their positions/orientations are updated every frame in applyFKResult().
+	 *
+	 * We use unit-height cylinders (height = 1) and scale Y each frame to
+	 * match the distance between consecutive joint positions.
+	 */
 	function buildArm() {
-		// Base pedestal (fixed, does not rotate)
-		const baseMesh = part(cyl(base.radius, base.radius * 1.3, base.height), COLORS.joint, scene);
-		baseMesh.position.y = base.height / 2;
+		const sphereGeo = new THREE.SphereGeometry(JOINT_RADIUS, 20, 16);
+		// Unit cylinder (height=1, centred at origin) — scaled per frame
+		const cylGeo    = new THREE.CylinderGeometry(LINK_RADIUS, LINK_RADIUS, 1, 20, 1);
 
-		// ── Joint 0: base yaw  (rotates around Y) ────────────────────────────
-		j0 = new THREE.Group();
-		j0.position.y = base.height;
-		scene.add(j0);
-		part(sph(seg0.joint.visualRadius), COLORS.joint, j0);
+		// Base sphere (shoulder / world origin)
+		const baseMat = toon(JOINT_BASE_COLOR);
+		baseMesh = meshWithOutline(sphereGeo, baseMat, scene);
+		baseMesh.position.set(0, 0, 0);
 
-		// Link 0: upper arm — name engraved via canvas texture
-		const l0     = new THREE.Group();
-		j0.add(l0);
-		const l0Mesh = part(cyl(seg0.link.radius, seg0.link.radius, seg0.link.length), COLORS.body, l0, makeNameTexture());
-		l0Mesh.position.y = seg0.link.length / 2;
+		// 7 joints + 7 links
+		for (let i = 0; i < 7; i++) {
+			const jMat = toon(DEFAULT_COLOR);
+			const lMat = toon(DEFAULT_COLOR);
+			jointMats.push(jMat);
+			linkMats.push(lMat);
+			jointMeshes.push(meshWithOutline(sphereGeo, jMat, scene));
+			linkMeshes.push(meshWithOutline(cylGeo,    lMat, scene));
+		}
+	}
 
-		// ── Joint 1: shoulder pitch  (rotates around Z) ───────────────────────
-		j1 = new THREE.Group();
-		j1.position.y = seg0.link.length;
-		j0.add(j1);
-		part(sph(seg1.joint.visualRadius), COLORS.joint, j1);
+	// ── Frame update helpers ───────────────────────────────────────────────────
 
-		// Link 1: forearm
-		const l1     = new THREE.Group();
-		j1.add(l1);
-		const l1Mesh = part(cyl(seg1.link.radius, seg1.link.radius, seg1.link.length), COLORS.body, l1);
-		l1Mesh.position.y = seg1.link.length / 2;
+	const _up    = new THREE.Vector3(0, 1, 0);
+	const _start = new THREE.Vector3();
+	const _end   = new THREE.Vector3();
+	const _dir   = new THREE.Vector3();
+	const _mid   = new THREE.Vector3();
 
-		// ── Joint 2: elbow pitch  (rotates around Z) ──────────────────────────
-		j2 = new THREE.Group();
-		j2.position.y = seg1.link.length;
-		j1.add(j2);
-		part(sph(seg2.joint.visualRadius), COLORS.joint, j2);
+	/** Position and orient a unit-height cylinder between two world points. */
+	function placeCylinder(mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3) {
+		_dir.subVectors(end, start);
+		const len = _dir.length();
+		if (len < 1e-6) { mesh.visible = false; return; }
+		mesh.visible = true;
+		_mid.addVectors(start, end).multiplyScalar(0.5);
+		mesh.position.copy(_mid);
+		mesh.scale.set(1, len, 1);
+		mesh.quaternion.setFromUnitVectors(_up, _dir.normalize());
+	}
 
-		// Link 2: wrist
-		const l2     = new THREE.Group();
-		j2.add(l2);
-		const l2Mesh = part(cyl(seg2.link.radius, seg2.link.radius, seg2.link.length), COLORS.body, l2);
-		l2Mesh.position.y = seg2.link.length / 2;
+	/**
+	 * Apply one frame of FK data returned by Python's controller.step().
+	 * joint_positions[0] is the shoulder (world origin).
+	 * joint_positions[1..7] are the 7 joint frame origins.
+	 */
+	function applyFKResult(positions: [number, number, number][], colors: string[]) {
+		const pts = positions.map(p => pyToThree(p));
 
-		// ── Claw ──────────────────────────────────────────────────────────────
-		const clawBase = new THREE.Group();
-		clawBase.position.y = seg2.link.length;
-		j2.add(clawBase);
-		part(sph(claw.knuckleRadius), COLORS.joint, clawBase);
+		// Base sphere at shoulder
+		baseMesh.position.copy(pts[0]);
 
-		clawL = new THREE.Group();
-		clawR = new THREE.Group();
-		clawL.position.set(-claw.fingerSpread, 0, 0);
-		clawR.position.set( claw.fingerSpread, 0, 0);
-		clawBase.add(clawL, clawR);
+		for (let i = 0; i < 7; i++) {
+			// Joint sphere at position i+1
+			jointMeshes[i].position.copy(pts[i + 1]);
 
-		// Fingers — tapered cylinders (wider at base)
-		const fingerGeo = cyl(claw.fingerRadius * 0.45, claw.fingerRadius, claw.fingerLength);
-		[clawL, clawR].forEach(g => {
-			const f = part(fingerGeo, COLORS.claw, g);
-			f.position.y = claw.fingerLength / 2;
-		});
+			// Tint joints with per-joint colours from Python
+			const hex = parseInt(colors[i].replace('#', ''), 16);
+			jointMats[i].color.setHex(hex);
+			linkMats[i].color.setHex(hex);
 
-		// Invisible end-effector marker — getWorldPosition() target for IK
-		clawTip = new THREE.Group();
-		clawTip.position.y = claw.fingerLength;
-		clawBase.add(clawTip);
-
-		// Apply default pose
-		setJoints(DEFAULT_STATE.angles as [number, number, number]);
+			// Link cylinder from position i to i+1
+			_start.copy(pts[i]);
+			_end.copy(pts[i + 1]);
+			placeCylinder(linkMeshes[i], _start, _end);
+		}
 	}
 
 	// ─── Renderer ─────────────────────────────────────────────────────────────
@@ -246,14 +219,13 @@
 		renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true, alpha: true });
 		renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 		renderer.setSize(w, h, false);
-		renderer.setClearColor(0x000000, 0); // transparent background
+		renderer.setClearColor(0x000000, 0);
 
 		scene  = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 50);
 		camera.position.set(2.8, 2.0, 5.8);
 		camera.lookAt(0, 1.3, 0);
 
-		// Lighting — directional from top-right gives crisp toon step contrast
 		scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 		const sun = new THREE.DirectionalLight(0xffffff, 1.4);
 		sun.position.set(5, 9, 4);
@@ -262,8 +234,19 @@
 		buildArm();
 	}
 
-	function loop() {
+	let lastTime = 0;
+
+	function loop(now: number) {
 		animId = requestAnimationFrame(loop);
+
+		const dt = Math.min((now - lastTime) / 1000, 0.05); // cap at 50 ms
+		lastTime = now;
+
+		if (isArmReady() && dt > 0) {
+			const result = stepArm(dt);
+			if (result) applyFKResult(result.joint_positions, result.colors);
+		}
+
 		renderer.render(scene, camera);
 	}
 
@@ -276,18 +259,46 @@
 		camera.updateProjectionMatrix();
 	}
 
+	// ─── Pointer events — IK mouse tracking ──────────────────────────────────
+
+	function handlePointerMove(e: PointerEvent) {
+		if (!isArmReady()) return;
+		screenToIKTarget(e.clientX, e.clientY);
+	}
+
+	function handlePointerEnter(e: PointerEvent) {
+		if (!isArmReady()) return;
+		screenToIKTarget(e.clientX, e.clientY);
+	}
+
+	function handlePointerLeave() {
+		// Arm keeps its last IK target when the cursor leaves
+	}
+
+	// ─── Lifecycle ────────────────────────────────────────────────────────────
+
 	onMount(() => {
 		init();
-		loop();
+		lastTime = performance.now();
+		loop(lastTime);
+
 		ro = new ResizeObserver(onResize);
 		ro.observe(canvasEl);
+
+		// Start loading Pyodide in the background (non-blocking)
+		initArmPython()
+			.then(() => { pyReady = true; })
+			.catch(err => console.error('[RoboticArm] Pyodide init failed:', err));
+
+		// Also subscribe to the ready callback in case initArmPython was
+		// already called before this component mounted
+		onArmReady(() => { pyReady = true; });
 	});
 
 	onDestroy(() => {
-		if (!renderer) return; // SSR: onMount never ran, nothing to clean up
+		if (!renderer) return;
 		cancelAnimationFrame(animId);
 		ro?.disconnect();
-		// Dispose all Three.js resources
 		const disposed = new Set<THREE.BufferGeometry>();
 		scene?.traverse(obj => {
 			if (!(obj instanceof THREE.Mesh)) return;
@@ -303,4 +314,85 @@
 	});
 </script>
 
-<canvas bind:this={canvasEl} class={cls} style="display:block; width:100%; height:100%;"></canvas>
+<div class="arm-root {cls}">
+	<canvas
+		bind:this={canvasEl}
+		style="display:block; width:100%; height:100%;"
+		onpointermove={handlePointerMove}
+		onpointerenter={handlePointerEnter}
+		onpointerleave={handlePointerLeave}
+	></canvas>
+
+	<!-- Loading overlay — shown until Pyodide + numpy are ready -->
+	{#if !pyReady}
+		<div class="arm-loading-overlay" aria-live="polite">
+			<div class="arm-loading-inner">
+				<svg class="arm-spinner" viewBox="0 0 44 44" aria-hidden="true">
+					<circle class="arm-spinner-track" cx="22" cy="22" r="18" fill="none" stroke-width="3"/>
+					<circle class="arm-spinner-arc"   cx="22" cy="22" r="18" fill="none" stroke-width="3"
+						stroke-dasharray="40 72" stroke-linecap="round"/>
+				</svg>
+				<span class="arm-loading-label">loading python runtime…</span>
+			</div>
+		</div>
+	{/if}
+</div>
+
+<style>
+	.arm-root {
+		position: relative;
+		width: 100%;
+		height: 100%;
+	}
+
+	/* ── Loading overlay ──────────────────────────────────────────────────────── */
+	.arm-loading-overlay {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: flex-end;
+		justify-content: flex-start;
+		padding: 1rem 1.25rem;
+		pointer-events: none; /* don't block mouse on canvas beneath */
+	}
+
+	.arm-loading-inner {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		background: rgba(13, 17, 23, 0.72);
+		border: 1px solid rgba(78, 205, 196, 0.18);
+		border-radius: 9999px;
+		padding: 0.35rem 0.85rem 0.35rem 0.55rem;
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+	}
+
+	.arm-loading-label {
+		font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+		font-size: 0.65rem;
+		letter-spacing: 0.06em;
+		color: rgba(78, 205, 196, 0.75);
+	}
+
+	/* ── Spinner ──────────────────────────────────────────────────────────────── */
+	.arm-spinner {
+		width: 1rem;
+		height: 1rem;
+		flex-shrink: 0;
+	}
+
+	.arm-spinner-track {
+		stroke: rgba(78, 205, 196, 0.15);
+	}
+
+	.arm-spinner-arc {
+		stroke: rgba(78, 205, 196, 0.8);
+		transform-origin: 22px 22px;
+		animation: arm-spin 1.1s linear infinite;
+	}
+
+	@keyframes arm-spin {
+		to { transform: rotate(360deg); }
+	}
+</style>

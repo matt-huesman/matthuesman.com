@@ -22,7 +22,8 @@
 			location: 'Remote',
 			bullets: [
 				'Modernizing and rebuilding production website previously built on WordPress and legacy frameworks',
-				'Designing a scalable, maintainable architecture to support the organization\'s long-term web presence'
+				'Designing a scalable, maintainable architecture to support the organization\'s long-term web presence',
+				'Writing documentation and providing training to internal staff for website maintenance and content management'
 			],
 			icon: 'fa-solid fa-globe'
 		},
@@ -32,9 +33,10 @@
 			period: 'May 2024 – Present',
 			location: 'Mounds View, MN',
 			bullets: [
-				'Developed AI algorithm to automatically segment CT scans and extract post-implant valve metrics in a fully automated workflow',
+				'Helped develop an AI algorithm to automatically segment CT scans and extract post-implant valve metrics in a fully automated workflow',
 				'Built and improved Python/MATLAB 3D image processing pipelines to analyze 150+ subject CT scans for TMVR and MAC patients',
-				'Created MAC quantification algorithm generating key clinical decision-making metrics for thousands of subjects',
+				'Internally published a technical paper detailing the algorithm and results',
+				'Created MAC quantification algorithm generating key clinical decision-making metrics for countless subjects',
 				'Executed FDA-level script validation for TMVR automation, ensuring regulatory compliance within ±0.25mm',
 				'Implemented Git/GitLab Script Library and VCS best practices across the R&D engineering team'
 			],

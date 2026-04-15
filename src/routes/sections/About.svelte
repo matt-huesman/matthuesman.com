@@ -1,22 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import { base } from '$app/paths';
 	import Button from '$lib/components/Button.svelte';
 	import RoboticArm from '$lib/components/RoboticArm.svelte';
-
-	let arm: RoboticArm;
-
-	onMount(() => {
-		let isOpen = false;
-		setInterval(() => {
-			arm?.setClawOpen(isOpen ? 0 : 1);
-			isOpen = !isOpen;
-			arm?.setJoint(0, Math.random() * (-Math.PI * 2) - Math.PI);
-			arm?.setJoint(1, Math.random() * (-Math.PI * 2) - Math.PI);
-			arm?.setJoint(2, Math.random() * (-Math.PI * 2) - Math.PI);
-		}, 1000);
-	});
 </script>
 
 
@@ -28,7 +14,7 @@
 			<!-- Robotic arm column — bind:this={arm} gives you the full control API -->
 			<div class="flex justify-center md:justify-start flex-col" use:reveal>
 				<div class="arm-stage">
-					<RoboticArm bind:this={arm} class="arm-canvas" />
+					<RoboticArm class="arm-canvas" />
 				</div>
 				<p class="body-text text-center">This will be a completely autonomous machine learning powered robotic arm. This website is all it knows.</p>
 			</div>
@@ -52,13 +38,13 @@
 				<!-- Bio copy -->
 				<div class="flex flex-col gap-4">
 					<p class="body-lead">
-						I'm a computer engineering student with a minor in entrepreneurship — driven by the belief that the best software is built by people who care deeply about the problem, the team, and whoever's on the other end of the screen.
+						<b>Welcome to my portfolio ecosystem!</b> I'm a computer engineering student with a minor in entrepreneurship — driven by the belief that the best software is built by people who care deeply about the problem, the team, and whoever's on the other end of the screen.
 					</p>
 					<p class="body-text">
 						My work spans AI-driven medical imaging, full-stack web development, and everything in between.
 						Currently building an end-to-end AI segmentation workflow at Medtronic and modernizing
 						AAUDE's production web presence. My sights are set on software that operates at the
-						intersection of intelligence and human experience — precise, purposeful, built to last.
+						intersection of intelligence and human experience - precise, purposeful, built to last.
 					</p>
 				</div>
 

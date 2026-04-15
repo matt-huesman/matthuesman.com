@@ -24,9 +24,9 @@
 	<div class="container mx-auto flex h-16 items-center justify-between" style="max-width: var(--container); padding-inline: var(--gutter);">
 		<!-- Logo -->
 		<div class="flex items-center gap-3">
-			<img src={profile} alt="Matt Huesman" class="h-8 w-8 rounded-full" style="box-shadow: 0 0 0 1.5px var(--accent);" />
-			<a href="./" class="font-semibold text-[length:var(--text)] hover:opacity-70 transition-opacity" style="color: var(--text); font-size: 0.9375rem;">
-				Matt Huesman
+			<!-- <img src={profile} alt="Matt Huesman" class="h-8 w-8 rounded-full" style="box-shadow: 0 0 0 1.5px var(--accent);" /> -->
+			<a href="./" class="font-semibold text-[length:var(--text)] hover:opacity-70 transition-opacity" style="color: var(--text); font-size: 1.5rem;">
+				MH
 			</a>
 		</div>
 

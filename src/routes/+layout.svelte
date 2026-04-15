@@ -10,9 +10,9 @@
 
 <Header>
 	<HeaderItem href="{base}/#about">About</HeaderItem>
-	<HeaderItem href="{base}/#skills">Skills</HeaderItem>
+	<HeaderItem href="{base}/#experience">Experience</HeaderItem>
 	<HeaderItem href="{base}/#projects">Projects</HeaderItem>
-	<HeaderItem href="{base}/#terminal">Terminal</HeaderItem>
+	<HeaderItem href="{base}/#skills">Skills</HeaderItem>
 	<HeaderItem href="{base}/#contact">Contact</HeaderItem>
 </Header>
 

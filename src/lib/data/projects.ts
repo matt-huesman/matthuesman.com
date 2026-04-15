@@ -12,11 +12,19 @@ export interface Project {
 
 export const projects: Project[] = [
 	{
+		id: 'historical-image-restoration-ai',
+		title: 'Historical Image Restoration AI',
+		description: 
+			'Created an AI model trained on synthetic data to restore and colorize historical photographs. The model uses a combination of convolutional neural networks and generative adversarial networks to enhance image quality and add realistic colorization',
+		tags: ['Python', 'PyTorch', 'AI/ML', 'Image Processing'],
+		status: 'in-progress'
+	},
+	{
 		id: 'ct-scan-ai',
 		title: 'CT Scan AI Segmentation',
 		description:
 			'AI algorithm that automatically segments CT scans to extract post-implant valve metrics in a fully automated clinical workflow. Built at Medtronic to accelerate analysis of TMVR and MAC patients.',
-		tags: ['Python', 'MATLAB', 'AI/ML', 'Image Processing'],
+		tags: ['Python', 'PyTorch', 'AI/ML', 'Image Processing'],
 		status: 'in-progress'
 	},
 	{
@@ -37,15 +45,6 @@ export const projects: Project[] = [
 		github: 'https://github.com/matthuesman'
 	},
 	{
-		id: 'frc-krawler',
-		title: 'FRC Krawler 4.0',
-		description:
-			'Self-taught Kotlin and Android to lead design of a scouting app from scratch for KnightKrawler Robotics. Provided the team with a modernized strategy tool used in live FIRST Robotics competitions.',
-		tags: ['Kotlin', 'Android', 'Android Studio'],
-		status: 'complete',
-		github: 'https://github.com/matthuesman'
-	},
-	{
 		id: 'portfolio',
 		title: 'Portfolio Site',
 		description:
@@ -53,5 +52,14 @@ export const projects: Project[] = [
 		tags: ['SvelteKit', 'Svelte 5', 'TypeScript', 'OpenGL'],
 		status: 'in-progress',
 		github: 'https://github.com/matthuesman/matthuesman.com'
+	},
+	{
+		id: 'triangle-website',
+		title: 'Triangle Website',
+		description:
+			'Custom website design and development for Triangle Fraternity, focusing on modern aesthetics, drawing in new members, and enhancing online engagement.',
+		tags: ['Web Development', 'UI/UX Design'],
+		status: 'complete',
+		demo: 'https://triangleumn.org'
 	}
 ];

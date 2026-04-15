@@ -26,3 +26,6 @@ vite.config.ts.timestamp-*
 /build/wasm/
 /static/wasm/*.js
 /static/wasm/*.wasm
+
+# Pyodide runtime (downloaded by npm run pyodide:setup)
+/static/pyodide/
