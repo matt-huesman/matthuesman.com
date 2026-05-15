@@ -103,8 +103,8 @@
 	}
 
 	.window--dark .window-titlebar {
-		background: #0d1117;
-		border-bottom: 1px solid rgba(78, 205, 196, 0.08);
+		background: #001219;
+		border-bottom: 1px solid rgba(10, 147, 150, 0.15);
 	}
 
 	/* ── Title bar layout ─────────────────────────────────────────────────── */

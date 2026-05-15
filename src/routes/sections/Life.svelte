@@ -8,7 +8,7 @@
 	let windowClosed = $state(false);
 </script>
 
-<section id="life" style="background: var(--surface-alt); padding-block: var(--section-y);">
+<section id="life" style="background: var(--s-bg); padding-block: var(--section-y);">
 	<div style="max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter);">
 
 		<div class="grid grid-cols-1 items-center gap-16 md:grid-cols-2">
@@ -17,7 +17,7 @@
 			<div class="flex flex-col gap-5" use:reveal>
 				<div>
 					<p class="eyebrow mb-3">
-						<span style="color: var(--text-faint); margin-right: 0.5em;">02</span>
+						<span style="color: var(--accent); margin-right: 0.5em;">02</span>
 						Beyond the Terminal
 					</p>
 					<h2 class="section-title relative">
@@ -59,7 +59,7 @@
 							class="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs"
 							style="background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);"
 						>
-							<i class="{tag.icon} text-[0.6rem]" style="color: var(--accent-text);"></i>
+							<i class="{tag.icon} text-[0.6rem]" style="color: var(--s-text);"></i>
 							{tag.text}
 						</span>
 					{/each}
@@ -157,9 +157,9 @@
 	}
 
 	.life-tab--active {
-		color: var(--accent-text) !important;
+		color: var(--s-text) !important;
 		border-bottom-color: var(--accent) !important;
-		background: rgba(78, 205, 196, 0.04) !important;
+		background: var(--accent-faint) !important;
 	}
 
 	/* ── Body ────────────────────────────────────────────────────────────── */
@@ -258,8 +258,8 @@
 	}
 
 	.life-reopen:hover {
-		color: var(--accent-text);
-		border-color: var(--accent-teal);
+		color: var(--s-text);
+		border-color: var(--accent);
 	}
 
 	@keyframes fadeIn {

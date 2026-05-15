@@ -20,9 +20,9 @@
 	} = $props();
 
 	const accentStyle: Record<SkillColor, string> = {
-		teal:    'border-left-color: var(--accent-teal); color: var(--accent-teal);',
+		teal:    'border-left-color: #0a9396; color: #005f73;',
 		red:     'border-left-color: var(--accent-red); color: var(--accent-red);',
-		yellow:  'border-left-color: var(--accent-yellow); color: #9a7c00;',
+		yellow:  'border-left-color: #ee9b00; color: #ca6702;',
 		neutral: 'border-left-color: var(--border); color: var(--text-muted);'
 	};
 
@@ -145,14 +145,14 @@
 		font-size: 0.6rem;
 		padding: 2px 8px;
 		border-radius: var(--radius-full);
-		background: rgba(78, 205, 196, 0.12);
-		color: var(--accent-text);
+		background: rgba(10, 147, 150, 0.12);
+		color: #005f73;
 		text-decoration: none;
 		white-space: nowrap;
 		transition: background var(--duration-fast) var(--ease-out);
 	}
 
 	.popover-project-link:hover {
-		background: rgba(78, 205, 196, 0.25);
+		background: rgba(10, 147, 150, 0.25);
 	}
 </style>

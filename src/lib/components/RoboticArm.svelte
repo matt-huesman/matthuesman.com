@@ -361,7 +361,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		background: rgba(13, 17, 23, 0.72);
-		border: 1px solid rgba(78, 205, 196, 0.18);
+		border: 1px solid rgba(10, 147, 150, 0.20);
 		border-radius: 9999px;
 		padding: 0.35rem 0.85rem 0.35rem 0.55rem;
 		backdrop-filter: blur(4px);
@@ -372,7 +372,7 @@
 		font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
 		font-size: 0.65rem;
 		letter-spacing: 0.06em;
-		color: rgba(78, 205, 196, 0.75);
+		color: rgba(10, 147, 150, 0.85);
 	}
 
 	/* ── Spinner ──────────────────────────────────────────────────────────────── */
@@ -383,11 +383,11 @@
 	}
 
 	.arm-spinner-track {
-		stroke: rgba(78, 205, 196, 0.15);
+		stroke: rgba(10, 147, 150, 0.18);
 	}
 
 	.arm-spinner-arc {
-		stroke: rgba(78, 205, 196, 0.8);
+		stroke: rgba(10, 147, 150, 0.90);
 		transform-origin: 22px 22px;
 		animation: arm-spin 1.1s linear infinite;
 	}

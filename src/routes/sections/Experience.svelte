@@ -56,7 +56,7 @@
 	];
 </script>
 
-<section id="experience" style="background: var(--surface-alt); padding-block: var(--section-y);">
+<section id="experience" style="background: var(--s-bg); padding-block: var(--section-y);">
 	<div style="max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter);">
 
 		<div use:reveal>
@@ -81,7 +81,7 @@
 						>
 							<i
 								class="{entry.icon} text-[1rem]"
-								style="color: var(--accent-text);"
+								style="color: var(--s-text);"
 							></i>
 						</div>
 
@@ -101,7 +101,7 @@
 										{#if entry.upcoming}
 											<span
 												class="rounded-full px-2 py-0.5 font-mono text-[0.6rem] tracking-wide uppercase"
-												style="background: rgba(78,205,196,0.12); color: var(--accent-text); border: 1px solid rgba(78,205,196,0.3);"
+												style="background: var(--accent-faint); color: var(--s-text); border: 1px solid var(--accent-faint);"
 											>Next Chapter</span>
 										{/if}
 									</div>
@@ -113,7 +113,7 @@
 								<div class="text-right">
 									<p
 										class="font-mono text-xs"
-										style="color: var(--accent-text);"
+										style="color: var(--s-text);"
 									>{entry.period}</p>
 									<p
 										class="mt-0.5 font-mono text-[0.65rem]"

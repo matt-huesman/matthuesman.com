@@ -9,7 +9,7 @@
 	const DOT_REST_R     = 1.6;    // radius when background
 	const DOT_ACTIVE_A   = 1.0;     // opacity when forming text
 	const DOT_REST_A     = 0.17;    // opacity when background
-	const DOT_COLOR      = '#4ecdc4';
+	const DOT_COLOR      = '#0a9396';
 	const TAU            = Math.PI * 2;
 
 	// ── Spring physics ────────────────────────────────────────────────────
@@ -342,6 +342,6 @@
 		display: block;
 		width: 100%;
 		height: 100vh;
-		background: #f5f5f7;
+		background: #f0f8f8;
 	}
 </style>

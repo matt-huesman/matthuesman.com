@@ -29,7 +29,7 @@
 		.filter((g) => g.skills.length > 0);
 </script>
 
-<section id="skills" style="background: var(--surface-alt); padding-block: var(--section-y);">
+<section id="skills" style="background: var(--s-bg); padding-block: var(--section-y);">
 	<div style="max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter);">
 
 		<div use:reveal>
@@ -197,7 +197,7 @@
 	}
 
 	.project-ext-link:hover {
-		color: var(--accent-text);
+		color: var(--s-text);
 	}
 
 	.project-desc {

@@ -20,7 +20,7 @@
 	<!-- Eyebrow -->
 	<p class="eyebrow mb-3">
 		{#if number}
-			<span style="color: var(--text-faint); margin-right: 0.5em;">{number}</span>
+			<span style="color: var(--accent); margin-right: 0.5em;">{number}</span>
 		{/if}
 		{label}
 	</p>

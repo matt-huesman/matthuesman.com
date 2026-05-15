@@ -3,7 +3,7 @@
 	import Button from '$lib/components/Button.svelte';
 </script>
 
-<section id="contact" style="background: var(--surface); padding-block: var(--section-y);">
+<section id="contact" style="background: var(--s-bg); padding-block: var(--section-y);">
 	<div
 		style="max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter);"
 	>
@@ -18,7 +18,7 @@
 				style="line-height: 1.1;"
 			>
 				Let's Build<br />
-				<span style="color: var(--accent-text);">What's Next.</span>
+				<span style="color: var(--s-text);">What's Next.</span>
 			</h2>
 
 			<!-- Body -->
@@ -67,7 +67,7 @@
 
 <style>
 	.social-icon:hover {
-		color: var(--accent-text) !important;
+		color: var(--s-text) !important;
 		border-color: var(--accent) !important;
 		box-shadow: var(--shadow-sm);
 	}

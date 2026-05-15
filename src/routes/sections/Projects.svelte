@@ -9,7 +9,7 @@
 	const featured = projects.slice(0, 6);
 </script>
 
-<section id="projects" style="background: var(--surface); padding-block: var(--section-y);">
+<section id="projects" style="background: var(--s-bg); padding-block: var(--section-y);">
 	<div style="max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter);">
 
 		<!-- Header row with "View all →" link -->
@@ -18,9 +18,9 @@
 			<a
 				href="{base}/projects"
 				class="mb-1 shrink-0 font-mono text-xs transition-colors"
-				style="color: var(--text-faint);"
-				onmouseenter={(e) => (e.currentTarget.style.color = 'var(--accent-text)')}
-				onmouseleave={(e) => (e.currentTarget.style.color = 'var(--text-faint)')}
+				style="color: var(--s-text);"
+				onmouseenter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
+				onmouseleave={(e) => (e.currentTarget.style.color = 'var(--s-text)')}
 			>
 				View all →
 			</a>

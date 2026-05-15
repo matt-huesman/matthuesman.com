@@ -18,7 +18,7 @@
 <nav
 	class="fixed top-0 z-50 w-full transition-all duration-300"
 	style={scrolled
-		? 'background: rgba(245,245,247,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.06);'
+		? 'background: rgba(240,248,248,0.90); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(10,147,150,0.10);'
 		: 'background: transparent;'}
 >
 	<div class="container mx-auto flex h-16 items-center justify-between" style="max-width: var(--container); padding-inline: var(--gutter);">

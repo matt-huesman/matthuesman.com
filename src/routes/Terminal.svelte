@@ -182,12 +182,13 @@
 			{/each}
 			<div class="flex items-center gap-2 mt-1">
 				<span class="shrink-0 font-mono text-sm">
-					<span style="color: #a78bfa;">matt@portfolio</span><span style="color: #4b5563;">:</span><span style="color: var(--accent-text);">{promptCwd}</span><span style="color: #f5f5f7;">$</span>
+					<span style="color: #94d2bd;">matt@portfolio</span><span style="color: #4d7a82;">:</span><span style="color: var(--accent-text);">{promptCwd}</span><span style="color: #e9d8a6;">$</span>
 				</span>
 				<input
 					bind:this={termInput}
 					type="text"
-					class="flex-1 border-none bg-transparent font-mono text-sm text-green-300 outline-none caret-cyan-400"
+					class="flex-1 border-none bg-transparent font-mono text-sm outline-none"
+					style="color: #94d2bd; caret-color: #0a9396;"
 					autocomplete="off"
 					spellcheck="false"
 					onkeydown={handleInputKeydown}
@@ -205,10 +206,10 @@
 			<p class="font-mono text-[0.65rem] tracking-[0.18em] uppercase mb-3" style="color: var(--accent-text);">
 				Interactive
 			</p>
-			<h2 class="text-[clamp(2rem,4vw,3rem)] font-bold leading-tight mb-3" style="color: #f5f5f7;">
+			<h2 class="text-[clamp(2rem,4vw,3rem)] font-bold leading-tight mb-3" style="color: #94d2bd;">
 				Try the Terminal
 			</h2>
-			<p class="text-sm" style="color: #6e6e73; max-width: 46rem;">
+			<p class="text-sm" style="color: #4d7a82; max-width: 46rem;">
 				A real shell running in your browser. Try:
 				<code class="font-mono" style="color: var(--accent-text);">ls</code>,
 				<code class="font-mono" style="color: var(--accent-text);">cat resume.txt</code>,
@@ -321,7 +322,7 @@
 
 	/* ── Terminal body ────────────────────────────────────────────────────────── */
 	.term-body {
-		background: #1c2436;
+		background: #051c25;
 		height: 22rem;
 	}
 
@@ -336,7 +337,7 @@
 		justify-content: center;
 		gap: 0.625rem;
 		border-radius: 0.75rem;
-		border: 1px dashed rgba(78, 205, 196, 0.15);
+		border: 1px dashed rgba(10, 147, 150, 0.20);
 		/* Matches Window titlebar (~44px) + term-body height */
 		height: calc(44px + 22rem);
 	}
@@ -371,7 +372,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		background: #0d1117;
+		background: #001219;
 		padding: 10px 14px;
 	}
 
@@ -427,10 +428,10 @@
 		line-height: 1.6;
 		white-space: pre-wrap;
 		word-break: break-word;
-		color: #86efac;
+		color: #94d2bd;
 		margin: 0;
 	}
 
-	:global(.term-output) { color: #d1d5db; }
-	:global(.term-prompt-indicator) { color: #34d399; }
+	:global(.term-output) { color: #e9d8a6; }
+	:global(.term-prompt-indicator) { color: #0a9396; }
 </style>

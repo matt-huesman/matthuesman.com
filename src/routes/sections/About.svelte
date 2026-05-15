@@ -6,7 +6,7 @@
 </script>
 
 
-<section id="about" style="background: var(--surface); padding-block: var(--section-y);">
+<section id="about" style="background: var(--s-bg); padding-block: var(--section-y);">
 <!-- <div class="header-fade-out" aria-hidden="true"></div> -->
 	<div class="container" style="max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter);">
 		<div class="grid grid-cols-1 items-center gap-16 md:grid-cols-2">
@@ -24,13 +24,13 @@
 				<!-- Eyebrow + heading -->
 				<div>
 					<p class="eyebrow mb-3">
-						<span style="color: var(--text-faint); margin-right: 0.5em;">01</span>
+						<span style="color: var(--accent); margin-right: 0.5em;">01</span>
 						Who I am
 					</p>
 					<h2 class="section-title mb-2">
-						Computer Engineering<br />
+						Computer Engineer<br />
 					</h2>
-					<h2 class="section-title" style="color: #ffcc33; background: #7a0019; padding: 0.25rem 0.5rem; margin: 0.25rem; border-radius: var(--radius-sm); width: fit-content;">
+					<h2 class="section-title" style="color: #ee9b00; background: #9b2226; padding: 0.25rem 0.5rem; margin: 0.25rem; border-radius: var(--radius-sm); width: fit-content;">
 						@ UMN
 					</h2>
 				</div>
@@ -60,7 +60,7 @@
 							class="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs"
 							style="background: var(--surface-alt); border: 1px solid var(--border); color: var(--text-muted);"
 						>
-							<i class="{stat.icon} text-[0.6rem]" style="color: var(--accent-text);"></i>
+							<i class="{stat.icon} text-[0.6rem]" style="color: var(--s-text);"></i>
 							{stat.text}
 						</span>
 					{/each}

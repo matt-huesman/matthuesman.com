@@ -27,11 +27,11 @@
 </script>
 
 {#if href}
-	<a {href} class="btn btn--{variant} {sizeClass}" style="color: {variant === 'primary' ? '#ffffff' : 'var(--text)'}" class:opacity-50={disabled} class:pointer-events-none={disabled}>
+	<a {href} class="btn btn--{variant} {sizeClass}" class:opacity-50={disabled} class:pointer-events-none={disabled}>
 		{@render children()}
 	</a>
 {:else}
-	<button {type} {disabled} {onclick} class="btn btn--{variant} {sizeClass}" style="color: {variant === 'primary' ? '#ffffff' : 'var(--text)'}">
+	<button {type} {disabled} {onclick} class="btn btn--{variant} {sizeClass}">
 		{@render children()}
 	</button>
 {/if}

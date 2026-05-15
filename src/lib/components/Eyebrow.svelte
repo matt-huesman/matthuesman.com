@@ -10,7 +10,7 @@
 
 <p class="eyebrow mb-3">
 	{#if number}
-		<span class="text-[var(--text-faint)] mr-2">{number}</span>
+		<span style="color: var(--accent); margin-right: 0.5em;">{number}</span>
 	{/if}
 	{label}
 </p>
