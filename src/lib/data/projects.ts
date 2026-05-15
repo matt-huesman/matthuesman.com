@@ -17,7 +17,7 @@ export const projects: Project[] = [
 		description: 
 			'Created an AI model trained on synthetic data to restore and colorize historical photographs. The model uses a combination of convolutional neural networks and generative adversarial networks to enhance image quality and add realistic colorization',
 		tags: ['Python', 'PyTorch', 'AI/ML', 'Image Processing'],
-		status: 'in-progress'
+		status: 'complete'
 	},
 	{
 		id: 'ct-scan-ai',
@@ -25,7 +25,7 @@ export const projects: Project[] = [
 		description:
 			'AI algorithm that automatically segments CT scans to extract post-implant valve metrics in a fully automated clinical workflow. Built at Medtronic to accelerate analysis of TMVR and MAC patients.',
 		tags: ['Python', 'PyTorch', 'AI/ML', 'Image Processing'],
-		status: 'in-progress'
+		status: 'complete'
 	},
 	{
 		id: 'aaude-website',
@@ -42,7 +42,7 @@ export const projects: Project[] = [
 			'Minimax algorithm with alpha-beta pruning enabling efficient competitive gameplay. Benchmarked across 100+ hours of intra-model tests and documented in a research paper comparing efficiency across multiple configurations.',
 		tags: ['Python', 'AI Algorithms', 'Research'],
 		status: 'complete',
-		github: 'https://github.com/matthuesman'
+		github: 'https://github.com/matt-huesman'
 	},
 	{
 		id: 'portfolio',
@@ -51,7 +51,7 @@ export const projects: Project[] = [
 			'This site. Canvas-based particle animation engine, interactive terminal, and a fully autonomous ML-powered robotic arm simulation — built with SvelteKit and Svelte 5.',
 		tags: ['SvelteKit', 'Svelte 5', 'TypeScript', 'OpenGL'],
 		status: 'in-progress',
-		github: 'https://github.com/matthuesman/matthuesman.com'
+		github: 'https://github.com/matt-huesman/matthuesman.com'
 	},
 	{
 		id: 'triangle-website',

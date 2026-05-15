@@ -52,7 +52,7 @@
 		<!-- Project grid -->
 		<div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
 			{#each filtered as project, i (project.id)}
-				<div use:reveal={{ delay: i * 60 }}>
+				<div class="h-full" use:reveal={{ delay: i * 60 }}>
 					<ProjectCard {project} />
 				</div>
 			{/each}

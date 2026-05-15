@@ -16,7 +16,7 @@
 	const badge = statusBadge[project.status];
 </script>
 
-<article id={project.id} class="card--outlined flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-0.5 cursor-default">
+<article id={project.id} class="card--outlined flex h-full flex-col overflow-hidden transition-all duration-300 hover:-translate-y-0.5 cursor-default">
 	<div class="flex flex-1 flex-col p-6">
 		<!-- Header row -->
 		<div class="mb-3 flex items-start justify-between gap-3">
