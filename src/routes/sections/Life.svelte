@@ -102,6 +102,14 @@
 									</div>
 								</div>
 							{/each}
+							{#if lifeContent[activeTab] === lifeContent['listening']}
+								<a href="https://www.cassettosocial.com" target="_blank" rel="noopener noreferrer" class="life-item life-item--link" style="animation-delay: {lifeContent[activeTab].length * 60}ms;">
+									<p class="life-item-link-text">
+										Check me out on <span class="font-bold">Cassetto</span>!
+									</p>
+									<i class="fa-solid fa-arrow-up-right-from-square life-item-link-icon" aria-hidden="true"></i>
+								</a>
+							{/if}
 						</div>
 					</Window>
 				{:else}
@@ -175,6 +183,37 @@
 
 	.life-item:hover {
 		background: rgba(0, 0, 0, 0.03);
+	}
+
+	.life-item--link {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.625rem 0.625rem;
+		background: rgba(0, 0, 0, 0.04);
+	}
+
+	.life-item--link:hover {
+		background: rgba(0, 0, 0, 0.05);
+	}
+
+	.life-item-link-text {
+		font-size: 0.875rem;
+		color: var(--text);
+		line-height: 1.4;
+	}
+
+	.life-item-link-text a {
+		color: var(--text);
+		text-decoration: underline;
+		text-underline-offset: 0.15em;
+		font-weight: 500;
+	}
+
+	.life-item-link-icon {
+		margin-left: 0.35rem;
+		font-size: 0.7rem;
+		color: var(--text-faint);
 	}
 
 	.life-item-dot {
